@@ -2,6 +2,8 @@
 
 A modern, professional Beamer presentation theme combining the clean design of Metropolis with Indiana University's official branding.
 
+![Demo Preview](demo-preview.gif)
+
 ## Features
 
 - **Official IU Branding**: Uses IU's official colors (#A90533 Crimson, #111B23 Black)
