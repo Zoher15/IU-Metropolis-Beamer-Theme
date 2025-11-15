@@ -16,8 +16,8 @@ A modern, professional Beamer presentation theme combining the clean design of M
 ### Prerequisites
 
 - XeLaTeX or LuaLaTeX (required for custom fonts)
-- IU Brand Fonts installed (included in `IU-Brand-Fonts.zip`)
-- Metropolis Beamer theme (already installed on this system)
+- **Metropolis Beamer theme** (base theme - see installation below)
+- IU Brand Fonts installed (included in `IU-Brand-Fonts/`)
 
 ### Basic Usage
 
@@ -277,7 +277,74 @@ If IU fonts aren't available, you can modify the font settings in the `.sty` fil
 \setmonofont{Fira Mono}    % Use Fira Mono
 ```
 
+## Installation
+
+### 1. Install Metropolis Theme
+
+The IU-Metropolis theme requires the base Metropolis theme to be installed first.
+
+**On Ubuntu/Debian:**
+```bash
+sudo apt-get install texlive-latex-extra
+```
+
+**On macOS (with MacTeX):**
+Metropolis is included in the full MacTeX installation.
+
+**Manual installation:**
+```bash
+# Download from CTAN
+wget https://mirrors.ctan.org/macros/latex/contrib/beamer-contrib/themes/metropolis.zip
+unzip metropolis.zip
+cd metropolis
+sudo make install
+```
+
+**Verify installation:**
+```bash
+kpsewhich beamerthememetropolis.sty
+# Should return a path like: /usr/share/texlive/.../beamerthememetropolis.sty
+```
+
+### 2. Install IU Brand Fonts
+
+Extract and install the IU fonts:
+
+```bash
+cd IU-Brand-Fonts
+# Install to user fonts directory
+mkdir -p ~/.local/share/fonts
+find . \( -name "*.ttf" -o -name "*.otf" \) -exec cp {} ~/.local/share/fonts/ \;
+fc-cache -f -v
+```
+
+Verify installation:
+```bash
+fc-list | grep -i "benton sans"
+fc-list | grep -i "georgia pro"
+fc-list | grep -i "azeret mono"
+```
+
+### 3. Use the Theme
+
+Copy `beamerthemeIUmetropolis.sty` to your presentation directory or install it system-wide:
+
+```bash
+# Option 1: Copy to your project
+cp beamerthemeIUmetropolis.sty /path/to/your/presentation/
+
+# Option 2: Install system-wide (Linux)
+sudo cp beamerthemeIUmetropolis.sty /usr/share/texlive/texmf-dist/tex/latex/beamer/
+sudo texhash
+```
+
 ## Troubleshooting
+
+### Metropolis Not Found
+
+**Error**: `File beamerthememetropolis.sty not found`
+
+**Solution**: Install Metropolis theme (see Installation section above)
 
 ### Fonts Not Found
 
