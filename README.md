@@ -15,51 +15,38 @@ A modern, professional Beamer presentation theme combining the clean design of M
 
 ## Quick Start
 
-### Prerequisites
+**Three simple steps:**
 
-- XeLaTeX or LuaLaTeX (required for custom fonts)
-- **Metropolis Beamer theme** (base theme - see installation below)
-- IU Brand Fonts installed (included in `IU-Brand-Fonts/`)
+1. **Get the files**: Clone or download this repository
+2. **Install fonts**: See [Installation](#installation) below (5 minutes)
+3. **Start presenting**: Copy `beamerthemeIUmetropolis.sty` to your project and use it!
 
-### Basic Usage
+### Your First Presentation
 
 ```latex
 \documentclass[aspectratio=169]{beamer}
 \usetheme{IUmetropolis}
 
-\title{Your Presentation Title}
-\subtitle{Optional Subtitle}
+\title{My Presentation}
 \author{Your Name}
-\date{\today}
-\iuaffiliation{Your Department/School}
+\iuaffiliation{Your Department}
 
 \begin{document}
-
 \maketitle
 
-\begin{frame}{First Slide}
-  Your content here...
+\begin{frame}{Hello World}
+  Your content here!
 \end{frame}
 
 \end{document}
 ```
 
-### Compiling
-
-**Important**: You must use XeLaTeX (not pdfLaTeX) to compile:
-
+**Compile with:**
 ```bash
-xelatex -synctex=1 your-presentation.tex
-xelatex -synctex=1 your-presentation.tex  # Run twice for cross-references
+xelatex presentation.tex
 ```
 
-The `-synctex=1` flag enables forward/backward search between your PDF viewer and editor.
-
-Or with latexmk:
-
-```bash
-latexmk -xelatex -synctex=1 your-presentation.tex
-```
+That's it! See [demo.tex](demo.tex) for more examples.
 
 ## Files in this Directory
 
