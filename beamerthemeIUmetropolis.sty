@@ -1,0 +1,239 @@
+%%
+%% IU-Metropolis Beamer Theme
+%% Based on Metropolis theme with Indiana University branding
+%% Created: 2025-11-15
+%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeIUmetropolis}[2025/11/15 IU Metropolis Beamer Theme]
+
+% Load base Metropolis theme
+\usetheme{metropolis}
+
+% Require packages for colors and fonts
+\RequirePackage{xcolor}
+\RequirePackage{fontspec}
+\RequirePackage{tikz}
+
+%-------------------------------------------------------------------------------
+% IU BRAND COLORS
+%-------------------------------------------------------------------------------
+
+% Primary Colors
+\definecolor{IUCrimson}{HTML}{A90533}        % Primary brand color
+\definecolor{IUCream}{HTML}{FFFFFF}          % White/Cream
+\definecolor{IUBlack}{HTML}{111B23}          % Primary black for text
+
+% Crimson Variations
+\definecolor{IULightCrimson}{HTML}{ED1944}   % Light crimson for emphasis
+\definecolor{IUDarkCrimson}{HTML}{7A2531}    % Dark crimson
+\definecolor{IUDarkerCrimson}{HTML}{6B001F}  % Darker crimson (almost black-red)
+\definecolor{IUDarkestCrimson}{HTML}{6D0808} % Darkest crimson (very dark red-brown)
+
+% Supporting Colors
+\definecolor{IUBlackAlt}{HTML}{27344B}       % Alternative black
+\definecolor{IUDarkGray}{HTML}{B9BEC2}       % Dark gray
+\definecolor{IULightGray}{HTML}{F0EFEE}      % Light gray
+\definecolor{IULightCream}{HTML}{F8EEDF}     % Light cream background
+\definecolor{IUDarkCream}{HTML}{F8E3CA}      % Dark cream (tan/beige)
+
+%-------------------------------------------------------------------------------
+% CENTRALIZED COLOR SCHEME (Change these to customize theme globally)
+%-------------------------------------------------------------------------------
+
+\colorlet{IUAccent}{IUCrimson}              % Main accent color (crimson)
+\colorlet{IUTextPrimary}{IUBlack}           % Primary text color (dark)
+\colorlet{IUTextSecondary}{IUDarkGray}      % Secondary text (page numbers, etc.)
+\colorlet{IUBackground}{IUCream}            % Main background (white)
+\colorlet{IUBackgroundAlt}{IULightCream}    % Alternate background (section slides)
+\colorlet{IUProgressBg}{IULightCream}       % Progress bar background
+
+%-------------------------------------------------------------------------------
+% APPLY IU COLORS TO BEAMER
+%-------------------------------------------------------------------------------
+
+% Normal text - use main background for content slides
+\setbeamercolor{normal text}{fg=IUTextPrimary, bg=IUBackground}
+
+% Frame titles - primary text on main background
+\setbeamercolor{frametitle}{fg=IUTextPrimary, bg=IUBackground}
+
+% Title page (these are overridden in TITLE PAGE CUSTOMIZATION section below)
+\setbeamercolor{title}{fg=IUAccent}
+\setbeamercolor{subtitle}{fg=IUBlackAlt}
+\setbeamercolor{author}{fg=IUTextPrimary}
+\setbeamercolor{date}{fg=IUTextSecondary}
+\setbeamercolor{institute}{fg=IUBlackAlt}
+
+% Structure (bullets, etc.)
+\setbeamercolor{structure}{fg=IUAccent}
+
+% Progress bar - accent color on progress background
+\setbeamercolor{progress bar}{fg=IUAccent, bg=IUProgressBg}
+\setbeamercolor{progress bar in head/foot}{fg=IUAccent, bg=IUProgressBg}
+% Progress bar on section pages - accent on main background
+\setbeamercolor{progress bar in section page}{fg=IUAccent, bg=IUBackground}
+
+% Title separator - visible on accent background
+\setbeamercolor{title separator}{fg=IUBackground}
+
+% Blocks
+\setbeamercolor{block title}{fg=IUBackground, bg=IUAccent}
+\setbeamercolor{block body}{fg=IUTextPrimary, bg=IULightGray}
+
+% Alert blocks
+\setbeamercolor{block title alerted}{fg=IUBackground, bg=IULightCrimson}
+\setbeamercolor{block body alerted}{fg=IUTextPrimary, bg=IUBackgroundAlt}
+
+% Example blocks
+\setbeamercolor{block title example}{fg=IUBackground, bg=IUDarkCrimson}
+\setbeamercolor{block body example}{fg=IUTextPrimary, bg=IULightGray}
+
+% Alerted text
+\setbeamercolor{alerted text}{fg=IULightCrimson}
+
+% Itemize/enumerate
+\setbeamercolor{item}{fg=IUAccent}
+\setbeamercolor{itemize item}{fg=IUAccent}
+\setbeamercolor{itemize subitem}{fg=IUDarkCrimson}
+\setbeamercolor{enumerate item}{fg=IUAccent}
+
+% Section in TOC - match section slide titles
+\setbeamercolor{section in toc}{fg=IUTextPrimary}
+\setbeamercolor{subsection in toc}{fg=IUTextPrimary}
+
+% Footer - secondary text, inherit background from slide
+\setbeamercolor{footline}{fg=IUTextSecondary, bg=}
+
+% Standout frame - accent background with white text (like title page)
+\setbeamercolor{standout}{fg=IUBackground, bg=IUAccent}
+
+% Section page colors - primary text
+\setbeamercolor{section page}{fg=IUTextPrimary, bg=IULightGray}
+
+%-------------------------------------------------------------------------------
+% IU BRAND FONTS
+%-------------------------------------------------------------------------------
+
+% Set Benton Sans as main font (IU's primary typeface)
+% Using system font names (fonts must be installed via fc-cache)
+\setsansfont{BentonSans}[
+    UprightFont = BentonSans-Book,
+    BoldFont = BentonSans-Bold,
+    ItalicFont = BentonSans-BookItalic,
+    BoldItalicFont = BentonSans-BoldItalic
+]
+
+% Set Georgia Pro as serif font (IU's secondary typeface)
+\setmainfont{Georgia Pro Cond}
+
+% Set Azeret Mono as monospace font (IU's tertiary typeface)
+\setmonofont{Azeret Mono}
+
+%-------------------------------------------------------------------------------
+% METROPOLIS OPTIONS
+%-------------------------------------------------------------------------------
+
+% Set Metropolis options for clean look
+\metroset{
+    titleformat=regular,           % Regular title format (not smallcaps)
+    progressbar=frametitle,        % Progress bar in frame title
+    numbering=counter,             % Slide numbering as counter only (no total)
+    block=fill,                    % Filled blocks
+    sectionpage=progressbar        % Section page with progress bar
+}
+
+%-------------------------------------------------------------------------------
+% CUSTOM COMMANDS
+%-------------------------------------------------------------------------------
+
+% Command to add IU logo to title page (when logo is available)
+% Usage: \iulogo{path/to/logo.pdf}
+\newcommand{\iulogo}[1]{%
+    \titlegraphic{\centering\includegraphics[height=0.75cm]{#1}}%
+}
+
+% Command for IU affiliation footer
+\newcommand{\iuaffiliation}[1]{%
+    \institute{#1}%
+}
+
+%-------------------------------------------------------------------------------
+% TITLE PAGE & SECTION PAGE CUSTOMIZATION
+%-------------------------------------------------------------------------------
+
+% Set title page colors - for split background (override defaults)
+\setbeamercolor{title}{use=normal text, fg=IUCream}           % White/cream on darkest crimson (top)
+\setbeamercolor{subtitle}{use=normal text, fg=IUCream}        % White/cream on darkest crimson (top)
+\setbeamercolor{author}{use=normal text, fg=IUTextPrimary}    % Dark on light cream (bottom)
+\setbeamercolor{institute}{use=normal text, fg=IUTextPrimary} % Dark on light cream (bottom)
+\setbeamercolor{date}{use=normal text, fg=IUBlack}            % Black on light cream (bottom)
+
+% Adjust title page font sizes
+\setbeamerfont{title}{size=\Large}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{date}{size=\scriptsize}
+
+% Apply backgrounds after preamble
+\AtEndPreamble{
+  % Set progress bar thickness
+  \setlength{\metropolis@titleseparator@linewidth}{1.5pt}
+  \setlength{\metropolis@progressonsectionpage@linewidth}{1.5pt}
+  \setlength{\metropolis@progressinheadfoot@linewidth}{1.5pt}
+
+  % Force frame title to use primary text (override Metropolis defaults)
+  \setbeamercolor{frametitle}{fg=IUTextPrimary, bg=IUBackground}
+
+  % Make TOC entries match section slide titles
+  \setbeamercolor{section in toc}{fg=IUTextPrimary}
+  \setbeamerfont{section in toc}{size=\normalsize}
+  \setbeamertemplate{section in toc}[sections numbered]
+
+  % Customize title page template (based on Metropolis, with adjusted spacing)
+  \setbeamertemplate{title page}{
+    \begin{minipage}[b][\paperheight]{\textwidth}
+      \vfill
+      \vspace*{1.5em}  % Add top spacing to push content down
+      \ifx\inserttitle\@empty\else\usebeamertemplate*{title}\fi
+      \ifx\insertsubtitle\@empty\else\usebeamertemplate*{subtitle}\fi
+      \usebeamertemplate*{title separator}
+      \ifx\beamer@shortauthor\@empty\else\usebeamertemplate*{author}\fi
+      \ifx\insertdate\@empty\else\usebeamertemplate*{date}\fi
+      \ifx\insertinstitute\@empty\else\usebeamertemplate*{institute}\fi
+      \vfill
+      \ifx\inserttitlegraphic\@empty\else\inserttitlegraphic\fi  % Add logo at bottom
+      \vspace*{1mm}
+    \end{minipage}
+  }
+
+  % Override maketitle with split background (top: dark crimson, bottom: light cream)
+  \renewcommand{\maketitle}{%
+    \begingroup
+      \setbeamercolor{title separator}{fg=IUAccent}  % Crimson progress bar
+      \setlength{\metropolis@titleseparator@linewidth}{3pt}  % Thicker progress bar on title page
+      \begin{frame}[plain,noframenumbering]
+        % Split background
+        \begin{tikzpicture}[remember picture,overlay]
+          % Top half - darkest crimson
+          \fill[IUDarkestCrimson] (current page.north west) rectangle ([yshift=-0.5\paperheight]current page.north east);
+          % Bottom half - light cream
+          \fill[IUBackgroundAlt] ([yshift=-0.5\paperheight]current page.north west) rectangle (current page.south east);
+        \end{tikzpicture}
+        \titlepage
+      \end{frame}
+    \endgroup
+    \addtocounter{framenumber}{-1}  % Don't count title page in numbering
+  }
+
+  % Set background color for section pages - alternate background
+  \AtBeginSection{
+    {%
+      \setbeamercolor{background canvas}{bg=IUBackgroundAlt}
+      \frame{\sectionpage}
+    }
+  }
+}
+
+\endinput

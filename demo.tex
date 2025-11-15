@@ -1,0 +1,306 @@
+% IU-Metropolis Demo Presentation
+% Compile with: xelatex demo.tex
+
+\documentclass[10pt,aspectratio=169]{beamer}
+
+% Use IU-Metropolis theme
+\usetheme{IUmetropolis}
+
+% Additional packages
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{listings}
+
+%-------------------------------------------------------------------------------
+% PRESENTATION METADATA
+%-------------------------------------------------------------------------------
+
+\title{IU-Metropolis Theme Demo}
+\subtitle{A Modern Beamer Theme with Indiana University Branding}
+\author{Your Name}
+\date{\today}
+\iuaffiliation{School of Informatics, Computing, and Engineering}
+
+% IU logo - trident in top right (edge at 1cm margin)
+\titlegraphic{
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[inner sep=0pt,outer sep=0pt,anchor=north east,xshift=-1cm,yshift=-1cm] at (current page.north east) {
+      \includegraphics[height=1cm]{logos/IU Trident Tab Reversed.pdf}
+    };
+  \end{tikzpicture}
+}
+
+%-------------------------------------------------------------------------------
+% DOCUMENT
+%-------------------------------------------------------------------------------
+
+\begin{document}
+
+% Title slide
+\maketitle
+
+% Table of contents
+\begin{frame}{Outline}
+  \setbeamertemplate{section in toc}[sections numbered]
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+%===============================================================================
+\section{Introduction}
+%===============================================================================
+
+\begin{frame}{Welcome to IU-Metropolis}
+
+  The IU-Metropolis theme combines:
+
+  \begin{itemize}
+    \item Clean, modern design from Metropolis
+    \item Official IU brand colors
+    \item IU brand fonts (Benton Sans, Georgia Pro, Azeret Mono)
+    \item Professional academic aesthetic
+  \end{itemize}
+
+  \vspace{1em}
+
+  Perfect for:
+  \begin{itemize}
+    \item Dissertation defense presentations
+    \item Research talks
+    \item Conference presentations
+    \item Class lectures
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Key Features}
+
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Design Elements}
+      \begin{itemize}
+        \item IU Crimson accents
+        \item Progress bar
+        \item Clean typography
+        \item Minimal distractions
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+      \textbf{Brand Compliance}
+      \begin{itemize}
+        \item Official IU colors
+        \item Approved fonts
+        \item Professional look
+        \item Versatile layouts
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+%===============================================================================
+\section{Typography}
+%===============================================================================
+
+\begin{frame}{Typography Examples}
+
+  \textbf{Benton Sans} (Primary): This is the main typeface for headings and body text.
+
+  \textit{Benton Sans Italic}: Used for emphasis within text.
+
+  \textsf{Sans-serif text} looks clean and professional.
+
+  \vspace{1em}
+
+  \texttt{Azeret Mono}: Used for code and technical notation.
+
+  \vspace{1em}
+
+  \alert{Alert text} appears in Light Crimson for emphasis.
+
+\end{frame}
+
+%===============================================================================
+\section{Content Examples}
+%===============================================================================
+
+\begin{frame}{Lists and Bullets}
+
+  \begin{itemize}
+    \item First level item in IU Crimson
+    \begin{itemize}
+      \item Second level item in darker crimson
+      \begin{itemize}
+        \item Third level item
+      \end{itemize}
+    \end{itemize}
+    \item Another first level item
+  \end{itemize}
+
+  \vspace{1em}
+
+  \begin{enumerate}
+    \item Numbered lists also use IU colors
+    \item Second numbered item
+    \item Third numbered item
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Blocks}
+
+  \begin{block}{Standard Block}
+    This is a standard block with IU Crimson header and light gray body.
+    Perfect for definitions, theorems, or important notes.
+  \end{block}
+
+  \begin{alertblock}{Alert Block}
+    This is an alert block with Light Crimson header.
+    Use for warnings, important points, or critical information.
+  \end{alertblock}
+
+  \begin{exampleblock}{Example Block}
+    This is an example block with Dark Crimson header.
+    Great for examples, case studies, or demonstrations.
+  \end{exampleblock}
+
+\end{frame}
+
+\begin{frame}{Mathematical Equations}
+
+  Inline math works perfectly: $E = mc^2$
+
+  \vspace{1em}
+
+  Display equations are well-formatted:
+  \[
+    \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+  \]
+
+  \vspace{1em}
+
+  Complex equations with alignment:
+  \begin{align}
+    f(x) &= ax^2 + bx + c \\
+    f'(x) &= 2ax + b \\
+    f''(x) &= 2a
+  \end{align}
+
+\end{frame}
+
+\begin{frame}[fragile]{Code Examples}
+
+  Code blocks use Azeret Mono:
+
+  \begin{lstlisting}[language=Python, basicstyle=\ttfamily\small]
+def hello_iu():
+    """Welcome to Indiana University"""
+    print("Go Hoosiers!")
+    return True
+  \end{lstlisting}
+
+  \vspace{1em}
+
+  Inline code: \texttt{import numpy as np}
+
+\end{frame}
+
+\begin{frame}{Tables}
+
+  \begin{table}
+    \caption{Sample data table}
+    \begin{tabular}{lcc}
+      \toprule
+      Method & Accuracy & Time (s) \\
+      \midrule
+      Baseline & 0.75 & 1.2 \\
+      Proposed & \textbf{0.89} & 0.8 \\
+      State-of-art & 0.82 & 2.1 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+
+\end{frame}
+
+%===============================================================================
+\section{Advanced Features}
+%===============================================================================
+
+\begin{frame}{Two-Column Layout}
+
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Left Column}
+
+      You can use columns to organize content side-by-side.
+
+      \begin{itemize}
+        \item Point one
+        \item Point two
+        \item Point three
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.48\textwidth}
+      \textbf{Right Column}
+
+      This is great for:
+      \begin{itemize}
+        \item Comparisons
+        \item Before/after
+        \item Theory vs. practice
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}[standout]
+  Questions?
+
+  \vspace{2em}
+
+  {\Large Thank you!}
+\end{frame}
+
+%===============================================================================
+\section{Conclusion}
+%===============================================================================
+
+\begin{frame}{Summary}
+
+  The IU-Metropolis theme provides:
+
+  \begin{enumerate}
+    \item Clean, modern design based on Metropolis
+    \item Full IU brand compliance (colors and fonts)
+    \item Professional academic presentation style
+    \item Easy customization options
+  \end{enumerate}
+
+  \vspace{1em}
+
+  \begin{block}{Getting Started}
+    Just use \texttt{\textbackslash usetheme\{IUmetropolis\}} and compile with XeLaTeX!
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+
+  \begin{thebibliography}{9}
+    \bibitem{metropolis}
+    Matthias Vogelgesang.
+    \textit{Metropolis Beamer Theme}.
+    \url{https://github.com/matze/mtheme}
+
+    \bibitem{iubrand}
+    Indiana University.
+    \textit{IU Brand Guidelines}.
+    \url{https://www.iu.edu/brand/}
+
+  \end{thebibliography}
+
+\end{frame}
+
+\end{document}
