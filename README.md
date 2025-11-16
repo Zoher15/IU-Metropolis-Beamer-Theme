@@ -2,7 +2,7 @@
 
 A modern, professional Beamer presentation theme combining the clean design of Metropolis with Indiana University's official branding.
 
-![Demo Preview](demo-preview.gif)
+![Demo Preview](demo-animation.gif)
 
 ## Features
 
@@ -64,7 +64,7 @@ That's it! See [demo.tex](demo.tex) for more examples.
 The title page features a distinctive split background design:
 - **Top half**: IU Darkest Crimson (#6D0808) background with white text (title and subtitle)
 - **Bottom half**: IU Light Cream (#F8EEDF) background with dark text (author, institution, date)
-- **Progress bar**: 3pt thick, IU Crimson, positioned between title and subtitle sections
+- **Progress bar**: 1.5pt thick, IU Light Crimson (#ED1944), positioned between title and subtitle sections
 
 ### Content Slides
 - **Background**: IU Light Cream (#F8EEDF)

@@ -211,8 +211,8 @@
   % Override maketitle with split background (top: dark crimson, bottom: light cream)
   \renewcommand{\maketitle}{%
     \begingroup
-      \setbeamercolor{title separator}{fg=IUAccent}  % Crimson progress bar
-      \setlength{\metropolis@titleseparator@linewidth}{3pt}  % Thicker progress bar on title page
+      \setbeamercolor{title separator}{fg=IULightCrimson}  % Light crimson progress bar
+      \setlength{\metropolis@titleseparator@linewidth}{1.5pt}  % Match progress bar thickness with other slides
       \begin{frame}[plain,noframenumbering]
         % Split background
         \begin{tikzpicture}[remember picture,overlay]
