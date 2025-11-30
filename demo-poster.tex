@@ -1,0 +1,291 @@
+% IU-Metropolis Poster Demo
+% Academic conference poster with Indiana University branding
+% Compile with: xelatex demo-poster.tex
+
+\documentclass[final,xcolor={table}]{beamer}
+
+% Poster size and scale
+% A0 portrait: 841mm x 1189mm (33.1" x 46.8")
+\usepackage[size=a0,orientation=portrait,scale=1.0]{beamerposter}
+
+% Use IU-Metropolis poster theme
+\usetheme{IUmetropolis-poster}
+
+% Additional packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}  % For \rowcolor in tables
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{qrcode}  % For QR codes (optional)
+\usepackage{multicol}
+
+\pgfplotsset{compat=1.18}
+
+%-------------------------------------------------------------------------------
+% POSTER METADATA
+%-------------------------------------------------------------------------------
+
+\title{Your Research Title: A Modern IU-Branded Poster Template}
+
+% Authors (use \and to separate, or manual formatting)
+\posterauthors{
+  \textbf{First Author}$^1$,
+  Second Author$^1$,
+  Third Author$^2$
+}
+
+% Affiliation
+\posteraffiliation{
+  $^1$School of Informatics, Computing, and Engineering, Indiana University \\
+  $^2$Department of Statistics, Indiana University
+}
+
+% Contact email (optional)
+\posteremail{firstauthor@iu.edu}
+
+% Logo in header (centered at top)
+\posterlogo{
+  \includegraphics[height=5cm]{logos/IU Trident Tab Reversed.pdf}
+}
+
+% Footer logo (bottom of poster)
+\posterfooterlogo{
+  \includegraphics[height=4cm]{logos/IU Standard Horizontal Lockup.pdf}
+}
+
+%-------------------------------------------------------------------------------
+% CUSTOM COMMANDS FOR THIS POSTER
+%-------------------------------------------------------------------------------
+
+% Highlight important results
+\newcommand{\highlight}[1]{\textcolor{IULightCrimson}{\textbf{#1}}}
+
+%-------------------------------------------------------------------------------
+% DOCUMENT CONTENT
+%-------------------------------------------------------------------------------
+
+\begin{document}
+
+\begin{frame}[t]  % [t] aligns content to top
+
+% Three-column layout (standard for A0 academic posters)
+\begin{columns}[T]
+
+%=============================================================================
+% LEFT COLUMN
+%=============================================================================
+\begin{column}{.30\textwidth}
+
+%-----------------------------------------------------------------------------
+\begin{block}{Introduction}
+
+Academic posters effectively communicate research findings at conferences. This template demonstrates:
+
+\begin{itemize}
+  \item Official IU brand colors and fonts
+  \item Clean, professional design
+  \item Flexible multi-column layout
+  \item Ready-to-use content blocks
+\end{itemize}
+
+\vskip1ex
+The IU-Metropolis poster theme extends the popular Beamer presentation theme, ensuring \highlight{visual consistency} across your research communications.
+
+\end{block}
+
+%-----------------------------------------------------------------------------
+\begin{block}{Background}
+
+\textbf{Research Context:}
+
+Prior work in this area has established several key findings:
+\begin{enumerate}
+  \item First major contribution by Smith et al. (2023)
+  \item Second breakthrough by Johnson (2024)
+  \item Gap in current understanding
+\end{enumerate}
+
+\vskip2ex
+
+\textbf{Problem Statement:}
+
+Despite these advances, critical challenges remain:
+\begin{itemize}
+  \item Challenge one requiring attention
+  \item Challenge two with significant impact
+  \item Challenge three for future work
+\end{itemize}
+
+\end{block}
+
+%-----------------------------------------------------------------------------
+\begin{alertblock}{Research Question}
+
+\textbf{Hypotheses:}
+\begin{itemize}
+  \item H1: Proposed method improves accuracy
+  \item H2: Computational efficiency is maintained
+  \item H3: Results generalize to new domains
+\end{itemize}
+
+\end{alertblock}
+
+\end{column}
+
+%=============================================================================
+% MIDDLE COLUMN
+%=============================================================================
+\begin{column}{.30\textwidth}
+
+%-----------------------------------------------------------------------------
+\begin{block}{Methodology}
+
+Our approach consists of three phases:
+
+\begin{enumerate}
+  \item \textbf{Data Collection:} Gather representative samples (N=1,000)
+  \item \textbf{Model Development:} Implement novel algorithm
+  \item \textbf{Validation:} Cross-validate using benchmarks
+\end{enumerate}
+
+Core algorithm:
+\[
+\min_{\theta} \mathcal{L}(\theta) = \sum_{i=1}^{n} \ell(y_i, f(x_i; \theta)) + \lambda \|\theta\|_2^2
+\]
+
+\end{block}
+
+%-----------------------------------------------------------------------------
+\begin{block}{Results}
+
+% Sample results table
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Method} & \textbf{Accuracy} & \textbf{Time (s)} \\
+\midrule
+Baseline & 0.75 & 1.2 \\
+State-of-art & 0.82 & 2.1 \\
+\rowcolor{IULightCream}
+\textbf{Ours} & \textbf{0.89} & \textbf{0.8} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vskip2ex
+
+Our method achieves \highlight{89\% accuracy}, a \highlight{7\% improvement} over previous best while being \highlight{2.6× faster}.
+
+\vskip1ex
+
+% Sample plot using pgfplots
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.9\linewidth,
+    height=9cm,
+    xlabel={Training Epochs},
+    ylabel={Validation Accuracy},
+    legend pos=south east,
+    grid=major,
+    tick label style={font=\fontsize{24}{29}\selectfont},
+    label style={font=\fontsize{30}{36}\selectfont},
+    legend style={font=\fontsize{26}{31}\selectfont},
+    every axis plot/.append style={line width=2pt}
+]
+
+% Baseline
+\addplot[color=IUDarkGray, mark=square*, mark size=3pt]
+    coordinates {(0,0.5)(10,0.65)(20,0.72)(30,0.75)(40,0.75)};
+
+% State-of-art
+\addplot[color=IUDarkCrimson, mark=triangle*, mark size=3pt]
+    coordinates {(0,0.55)(10,0.70)(20,0.78)(30,0.81)(40,0.82)};
+
+% Ours
+\addplot[color=IUCrimson, mark=*, mark size=3pt]
+    coordinates {(0,0.58)(10,0.75)(20,0.83)(30,0.87)(40,0.89)};
+
+\legend{Baseline, State-of-art, Ours}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\end{block}
+
+%-----------------------------------------------------------------------------
+
+\end{column}
+
+%=============================================================================
+% RIGHT COLUMN
+%=============================================================================
+\begin{column}{.30\textwidth}
+
+%-----------------------------------------------------------------------------
+\begin{exampleblock}{Key Findings}
+
+\begin{enumerate}
+  \item \textbf{Performance:} Achieved state-of-the-art results across all benchmarks
+
+  \item \textbf{Efficiency:} Reduced computational cost by 62\%
+
+  \item \textbf{Robustness:} Maintained accuracy under noise (SNR down to 5dB)
+
+  \item \textbf{Scalability:} Linear scaling to 10,000+ samples
+\end{enumerate}
+
+\end{exampleblock}
+
+%-----------------------------------------------------------------------------
+\begin{block}{Conclusions}
+
+This research makes three key contributions:
+
+\vskip1ex
+
+\begin{enumerate}
+  \item \textbf{Novel methodology} that improves accuracy by 7\% while reducing runtime by 62\%
+
+  \item \textbf{Theoretical analysis} providing convergence guarantees
+
+  \item \textbf{Comprehensive evaluation} across multiple benchmarks and conditions
+\end{enumerate}
+
+\end{block}
+
+%-----------------------------------------------------------------------------
+\begin{block}{Future Work}
+
+\textbf{Next Steps:}
+\begin{itemize}
+  \item Extend to multi-modal data
+  \item Optimize for edge deployment
+  \item Investigate theoretical properties
+  \item Collaborate with domain experts
+\end{itemize}
+
+\end{block}
+
+%-----------------------------------------------------------------------------
+\begin{block}{Full Paper \& Code}
+
+\begin{center}
+\qrcode[height=5.5cm]{https://arxiv.org/abs/2024.12345}
+\par\vskip0.5cm
+{\usebeamerfont{caption}\textbf{Scan for full paper}}
+\par\vskip0.3cm
+{\usebeamerfont{caption name}\texttt{arxiv.org/abs/2024.12345}}
+\end{center}
+
+\end{block}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+\end{document}

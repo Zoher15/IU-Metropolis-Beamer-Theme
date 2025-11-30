@@ -1,6 +1,6 @@
 # IU-Metropolis Beamer Theme
 
-A modern, professional Beamer presentation theme combining the clean design of Metropolis with Indiana University's official branding.
+A modern, professional Beamer presentation theme combining the clean design of Metropolis with Indiana University's official branding. Includes both presentation slides and academic poster templates.
 
 ![Demo Preview](demo-animation.gif)
 
@@ -11,7 +11,8 @@ A modern, professional Beamer presentation theme combining the clean design of M
 - **Clean Modern Design**: Based on the popular Metropolis Beamer theme
 - **Progress Indicators**: Built-in progress bars and slide numbering
 - **Versatile Blocks**: Standard, alert, and example blocks in IU colors
-- **Professional**: Perfect for dissertation defense, research talks, and academic presentations
+- **Presentation + Poster**: Complete themes for both slides and academic posters
+- **Professional**: Perfect for dissertation defense, research talks, conference posters, and academic presentations
 
 ## Quick Start
 
@@ -50,11 +51,21 @@ That's it! See [demo.tex](demo.tex) for more examples.
 
 ## Files in this Directory
 
-- `beamerthemeIUmetropolis.sty` - The theme file (IU-Metropolis theme)
+### Presentation Files
+- `beamerthemeIUmetropolis.sty` - Presentation theme file
 - `demo.tex` - Complete demo presentation with examples
 - `demo.pdf` - Compiled demo (19 pages, 16:9 aspect ratio)
+
+### Poster Files
+- `beamerthemeIUmetropolis-poster.sty` - Poster theme file
+- `demo-poster.tex` - Complete demo poster with examples
+- `demo-poster.pdf` - Compiled demo poster (A0 portrait, 1.4 scale)
+
+### Documentation & Assets
 - `IU-brand-assets.md` - Complete IU brand color and font reference
 - `README.md` - This file
+- `logos/` - IU logo files (trident, lockups)
+- `IU-Brand-Fonts/` - IU official fonts (install separately)
 
 **Note**: Font files should be installed separately. See Troubleshooting section below.
 
@@ -403,6 +414,53 @@ xelatex -synctex=1 demo.tex
 xelatex -synctex=1 demo.tex
 ```
 
+## Poster Template
+
+![Poster Demo Preview](demo-poster.png)
+
+A companion poster theme for academic conferences. Extends the presentation theme with poster-optimized layouts and typography.
+
+### Quick Start
+
+```latex
+\documentclass[final]{beamer}
+\usepackage[size=a0,orientation=portrait,scale=1.4]{beamerposter}
+\usetheme{IUmetropolis-poster}
+
+\title{Your Research Title}
+\posterauthors{Your Name$^1$, Collaborator$^2$}
+\posteraffiliation{$^1$Your Department, $^2$Their Department}
+\posteremail{you@iu.edu}
+\posterlogo{\includegraphics[height=5cm]{logos/IU Trident Tab Reversed.pdf}}
+\posterfooterlogo{\includegraphics[height=4cm]{logos/IU Standard Horizontal Lockup.pdf}}
+
+\begin{document}
+\begin{frame}[t]
+  \begin{columns}[T]
+    \begin{column}{.30\textwidth}
+      \begin{block}{Introduction}
+        Your content here!
+      \end{block}
+    \end{column}
+    % Add more columns...
+  \end{columns}
+\end{frame}
+\end{document}
+```
+
+**Compile:** `xelatex demo-poster.tex`
+
+### Key Differences from Slides
+
+- **Header**: Full-width crimson banner with centered logo (5cm), title (72pt), authors/institute (48pt), email (40pt)
+- **Footer**: Horizontal lockup logo (4cm) defines content bottom boundary
+- **Margins**: 2cm left/right for all content including header
+- **Accent**: 0.5cm light crimson stripe below header
+- **Typography**: Explicit poster-scale font sizes (title 72pt, blocks 48pt, body 36pt)
+- **Standard size**: A0 portrait (841×1189mm) at scale 1.4
+
+See `demo-poster.tex` for complete three-column layout example with all block types, figures, tables, and references.
+
 ## Credits
 
 - **Base Theme**: [Metropolis](https://github.com/matze/mtheme) by Matthias Vogelgesang
@@ -421,6 +479,7 @@ IU brand assets (colors, fonts, logos) are property of Indiana University and su
 - IU Brand Guidelines: https://www.iu.edu/brand/
 - Metropolis Theme Documentation: `texdoc beamertheme-metropolis`
 - Beamer User Guide: `texdoc beamer`
+- beamerposter Documentation: `texdoc beamerposter`
 - IU Brand Assets Reference: See `IU-brand-assets.md`
 
 ---

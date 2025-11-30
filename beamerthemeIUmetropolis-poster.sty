@@ -1,0 +1,298 @@
+%%
+%% IU-Metropolis Poster Theme
+%% Based on beamerposter and IUmetropolis theme
+%% For academic conference posters with Indiana University branding
+%% Created: 2025-11-30
+%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeIUmetropolis-poster}[2025/11/30 IU Metropolis Poster Theme]
+
+% Load beamerposter package for poster support
+\RequirePackage{beamerposter}
+
+% Load base IU-Metropolis theme (inherits all colors, fonts, blocks)
+\usetheme{IUmetropolis}
+
+% Additional packages for poster layout
+\RequirePackage{tikz}
+\RequirePackage{adjustbox}
+\RequirePackage{multicol}
+
+%-------------------------------------------------------------------------------
+% POSTER-SPECIFIC METROPOLIS OPTIONS
+%-------------------------------------------------------------------------------
+
+% Override Metropolis settings for posters
+\metroset{
+    titleformat=regular,           % Regular title format
+    progressbar=none,              % No progress bar on posters
+    numbering=none,                % No slide numbers
+    block=fill,                    % Filled blocks
+}
+
+%-------------------------------------------------------------------------------
+% POSTER DIMENSIONS & SCALING
+%-------------------------------------------------------------------------------
+
+% Default poster size: A0 portrait (can be overridden in document)
+% Standard sizes:
+% - A0: width=841mm, height=1189mm (33.1" x 46.8")
+% - A1: width=594mm, height=841mm  (23.4" x 33.1")
+% - Custom: specify in document preamble
+
+%-------------------------------------------------------------------------------
+% POSTER LAYOUT SPACING
+%-------------------------------------------------------------------------------
+
+% Increase spacing for better readability at poster scale
+\setlength{\leftmargini}{2em}
+\setlength{\leftmarginii}{1.5em}
+\setlength{\leftmarginiii}{1.2em}
+
+% Block spacing
+\setbeamersize{text margin left=2cm, text margin right=2cm}
+
+%-------------------------------------------------------------------------------
+% POSTER HEADLINE (HEADER BANNER)
+%-------------------------------------------------------------------------------
+
+% Define poster metadata commands
+\newcommand{\posterauthors}[1]{\def\@posterauthors{#1}}
+\newcommand{\posteraffiliation}[1]{\def\@posteraffiliation{#1}}
+\newcommand{\posteremail}[1]{\def\@posteremail{#1}}
+\newcommand{\posterlogo}[1]{\def\@posterlogo{#1}}
+\newcommand{\posterfooterlogo}[1]{\def\@posterfooterlogo{#1}}
+
+% Initialize defaults
+\def\@posterauthors{}
+\def\@posteraffiliation{Indiana University}
+\def\@posteremail{}
+\def\@posterlogo{}
+\def\@posterfooterlogo{}
+
+% Headline template - Full-width crimson banner with white text
+% Logo at top center defines where content starts
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0pt, center]{headline}
+    % IU Logo at top center (defines content start boundary)
+    \vskip1cm
+    \ifx\@posterlogo\@empty\else
+      \@posterlogo
+    \fi
+    \vskip1cm
+
+    % Crimson background banner
+    \begin{beamercolorbox}[wd=\paperwidth, leftskip=2cm, rightskip=2cm, sep=0pt]{headline}
+      \vskip1.5cm
+      \begin{center}
+        % Title
+        {\fontsize{72}{86}\selectfont\bfseries\color{IUCream}\inserttitle}
+        \vskip0.75cm
+
+        % Authors
+        \ifx\@posterauthors\@empty\else
+          {\fontsize{48}{58}\selectfont\color{IUCream}\@posterauthors}
+          \vskip0.4cm
+        \fi
+
+        % Affiliation
+        \ifx\@posteraffiliation\@empty\else
+          {\fontsize{48}{58}\selectfont\color{IULightCream}\@posteraffiliation}
+        \fi
+
+        % Email
+        \ifx\@posteremail\@empty\else
+          \vskip0.2cm
+          {\fontsize{40}{48}\selectfont\color{IULightCream}\texttt{\@posteremail}}
+        \fi
+      \end{center}
+      \vskip1.5cm
+    \end{beamercolorbox}
+
+    % Light crimson accent stripe at bottom of header
+    \begin{beamercolorbox}[wd=\paperwidth, ht=0.5cm, sep=0pt]{headline accent}
+    \end{beamercolorbox}
+  \end{beamercolorbox}
+}
+
+%-------------------------------------------------------------------------------
+% POSTER FOOTLINE (OPTIONAL FOOTER)
+%-------------------------------------------------------------------------------
+
+% Footer template - displays optional logo at bottom center
+% Logo height automatically defines the content margin
+\setbeamertemplate{footline}{
+  \begin{beamercolorbox}[wd=\paperwidth, center]{footline}
+    \vskip1cm
+    \ifx\@posterfooterlogo\@empty\else
+      \@posterfooterlogo
+    \fi
+    \vskip1cm
+  \end{beamercolorbox}
+}
+
+%-------------------------------------------------------------------------------
+% POSTER-SPECIFIC FONT SIZES
+%-------------------------------------------------------------------------------
+
+% Larger font sizes for poster readability (scale with poster size)
+% These work well for A0 at default scale
+
+% Title (in headline) - Huge (explicit size for posters)
+\setbeamerfont{title}{size=\fontsize{80}{96}\selectfont, series=\bfseries}
+
+% Authors - Large (explicit size for posters)
+\setbeamerfont{author}{size=\fontsize{48}{58}\selectfont}
+
+% Affiliation/Institute - Large (explicit size for posters)
+\setbeamerfont{institute}{size=\fontsize{48}{58}\selectfont}
+
+% Email - large (explicit size for posters)
+\setbeamerfont{email}{size=\fontsize{40}{48}\selectfont}
+
+% Frame title (section headers in poster)
+\setbeamerfont{frametitle}{size=\fontsize{64}{76}\selectfont, series=\bfseries}
+
+% Block titles (regular, alert, example)
+\setbeamerfont{block title}{size=\fontsize{48}{58}\selectfont, series=\bfseries}
+\setbeamerfont{block title alerted}{size=\fontsize{48}{58}\selectfont, series=\bfseries}
+\setbeamerfont{block title example}{size=\fontsize{48}{58}\selectfont, series=\bfseries}
+
+% Block body text (regular, alert, example)
+\setbeamerfont{block body}{size=\fontsize{36}{43}\selectfont}
+\setbeamerfont{block body alerted}{size=\fontsize{36}{43}\selectfont}
+\setbeamerfont{block body example}{size=\fontsize{36}{43}\selectfont}
+
+% Normal text (default body)
+\setbeamerfont{normal text}{size=\fontsize{36}{43}\selectfont}
+
+% Item labels (bullets)
+\setbeamerfont{itemize/enumerate body}{size=\fontsize{36}{43}\selectfont}
+\setbeamerfont{itemize/enumerate subbody}{size=\fontsize{32}{38}\selectfont}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\fontsize{28}{34}\selectfont}
+
+% Caption text
+\setbeamerfont{caption}{size=\fontsize{30}{36}\selectfont}
+\setbeamerfont{caption name}{size=\fontsize{30}{36}\selectfont, series=\bfseries}
+
+%-------------------------------------------------------------------------------
+% POSTER-SPECIFIC COLORS
+%-------------------------------------------------------------------------------
+
+% Headline colors
+\setbeamercolor{headline}{fg=IUCream, bg=IUDarkestCrimson}
+\setbeamercolor{headline accent}{fg=white, bg=IULightCrimson}
+
+% Ensure background is light cream (or can be overridden to white)
+\setbeamercolor{background canvas}{bg=IULightCream}
+
+% Optional: Override to pure white if preferred
+% \setbeamercolor{background canvas}{bg=white}
+
+%-------------------------------------------------------------------------------
+% POSTER BLOCK CUSTOMIZATION
+%-------------------------------------------------------------------------------
+
+% Increase block spacing for posters
+\setbeamertemplate{block begin}{
+  \vskip1.5ex
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm]{block title}
+    \usebeamerfont*{block title}\insertblocktitle
+  \end{beamercolorbox}
+  \vskip0.5ex
+  \usebeamerfont{block body}
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm, vmode]{block body}
+}
+
+\setbeamertemplate{block end}{
+  \end{beamercolorbox}
+  \vskip1.5ex
+}
+
+% Alert block
+\setbeamertemplate{block alerted begin}{
+  \vskip1.5ex
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm]{block title alerted}
+    \usebeamerfont*{block title alerted}\insertblocktitle
+  \end{beamercolorbox}
+  \vskip0.5ex
+  \usebeamerfont{block body alerted}
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm, vmode]{block body alerted}
+}
+
+\setbeamertemplate{block alerted end}{
+  \end{beamercolorbox}
+  \vskip1.5ex
+}
+
+% Example block
+\setbeamertemplate{block example begin}{
+  \vskip1.5ex
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm]{block title example}
+    \usebeamerfont*{block title example}\insertblocktitle
+  \end{beamercolorbox}
+  \vskip0.5ex
+  \usebeamerfont{block body example}
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm, vmode]{block body example}
+}
+
+\setbeamertemplate{block example end}{
+  \end{beamercolorbox}
+  \vskip1.5ex
+}
+
+%-------------------------------------------------------------------------------
+% ITEMIZE/ENUMERATE CUSTOMIZATION FOR POSTERS
+%-------------------------------------------------------------------------------
+
+% Larger bullet points
+\setbeamertemplate{itemize item}{\color{IUCrimson}\raisebox{0.2ex}{\scalebox{1.8}{$\bullet$}}}
+\setbeamertemplate{itemize subitem}{\color{IUDarkCrimson}\raisebox{0.2ex}{\scalebox{1.5}{$\circ$}}}
+\setbeamertemplate{itemize subsubitem}{\color{IUDarkCrimson}\raisebox{0.2ex}{\scalebox{1.2}{$-$}}}
+
+%-------------------------------------------------------------------------------
+% HELPER COMMANDS FOR POSTER LAYOUT
+%-------------------------------------------------------------------------------
+
+% Command to create a section header (not a block, just styled text)
+\newcommand{\postersection}[1]{%
+  \vskip1cm
+  {\usebeamerfont{frametitle}\color{IUCrimson}\textbf{#1}}
+  \vskip0.5cm
+  {\color{IULightCrimson}\rule{\linewidth}{0.3cm}}
+  \vskip0.5cm
+}
+
+% Command for two-column layout within poster
+\newenvironment{postercolumns}[1][2]{
+  \begin{columns}[T]
+}{
+  \end{columns}
+}
+
+% Command for figure with caption
+\newcommand{\posterfigure}[3][1.0]{%
+  \begin{center}
+    \includegraphics[width=#1\linewidth]{#2}
+    \par\vskip0.5cm
+    {\usebeamerfont{caption}\color{IUBlack}#3}
+  \end{center}
+}
+
+%-------------------------------------------------------------------------------
+% POSTER BACKGROUND CUSTOMIZATION
+%-------------------------------------------------------------------------------
+
+% Optional: Add subtle background pattern or keep clean
+\setbeamertemplate{background}{
+  % Clean background - no pattern
+  % Uncomment below to add subtle IU branding watermark
+  % \begin{tikzpicture}[remember picture, overlay]
+  %   \node[opacity=0.03] at (current page.center) {
+  %     \includegraphics[width=0.8\paperwidth]{logos/IU-watermark.pdf}
+  %   };
+  % \end{tikzpicture}
+}
+
+\endinput
