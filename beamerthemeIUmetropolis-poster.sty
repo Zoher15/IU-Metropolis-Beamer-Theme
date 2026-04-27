@@ -71,6 +71,19 @@
 \def\@posterlogo{}
 \def\@posterfooterlogo{}
 
+% Helper command to make first author bold
+% Assumes authors are separated by \quad
+\RequirePackage{xstring}
+\newcommand{\@formatauthors}[1]{%
+  \StrBefore{#1}{\noexpand\quad}[\firstauthor]%
+  \StrBehind{#1}{\noexpand\quad}[\restauthors]%
+  \IfStrEq{\restauthors}{}{%
+    \textbf{#1}% Only one author
+  }{%
+    \textbf{\firstauthor}\quad\restauthors% Multiple authors
+  }%
+}
+
 % Headline template - Full-width crimson banner with white text
 % Logo at top center defines where content starts
 \setbeamertemplate{headline}{
@@ -92,7 +105,7 @@
 
         % Authors
         \ifx\@posterauthors\@empty\else
-          {\fontsize{48}{58}\selectfont\color{IUCream}\@posterauthors}
+          {\fontsize{48}{58}\selectfont\color{IUCream}\@formatauthors{\@posterauthors}}
           \vskip0.4cm
         \fi
 
