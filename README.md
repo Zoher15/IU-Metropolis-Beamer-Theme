@@ -424,26 +424,31 @@ A companion poster theme for academic conferences. Extends the presentation them
 
 ```latex
 \documentclass[final]{beamer}
-\usepackage[size=a0,orientation=portrait,scale=1.4]{beamerposter}
+\usepackage[size=a0,orientation=portrait,scale=1.0]{beamerposter}
 \usetheme{IUmetropolis-poster}
 
-\title{Your Research Title}
-\posterauthors{Your Name$^1$, Collaborator$^2$}
-\posteraffiliation{$^1$Your Department, $^2$Their Department}
-\posteremail{you@iu.edu}
-\posterlogo{\includegraphics[height=5cm]{logos/IU Trident Tab Reversed.pdf}}
-\posterfooterlogo{\includegraphics[height=4cm]{logos/IU Standard Horizontal Lockup.pdf}}
+\postermargin{2cm}
+\posterheadline{Poster Headline: A Modern IU-Branded Template}
+\title{Your Research Title: A Formal Study of Methods, Results, and Impact}
+\posterauthors{\textbf{First Author}, Second Author, Third Author}
+\posteraffiliation{
+  \includegraphics[height=3.4cm]{logos/IU Standard Horizontal Lockup Reversed.png}
+}
+\posterqrurl{https://example.com/full-paper}
+\posterqrheight{5.5cm}
+\posterqrwidth{6cm}
+\posterqrlabel{Scan for full paper}
 
 \begin{document}
 \begin{frame}[t]
-  \begin{columns}[T]
-    \begin{column}{.30\textwidth}
+  \begin{postergrid}[3]
+    \begin{postergridcolumn}{0.333333}
       \begin{block}{Introduction}
         Your content here!
       \end{block}
-    \end{column}
+    \end{postergridcolumn}
     % Add more columns...
-  \end{columns}
+  \end{postergrid}
 \end{frame}
 \end{document}
 ```
@@ -452,12 +457,12 @@ A companion poster theme for academic conferences. Extends the presentation them
 
 ### Key Differences from Slides
 
-- **Header**: Full-width crimson banner with centered logo (5cm), title (72pt), authors/institute (48pt), email (40pt)
-- **Footer**: Horizontal lockup logo (4cm) defines content bottom boundary
-- **Margins**: 2cm left/right for all content including header
-- **Accent**: 0.5cm light crimson stripe below header
-- **Typography**: Explicit poster-scale font sizes (title 72pt, blocks 48pt, body 36pt)
-- **Standard size**: A0 portrait (841×1189mm) at scale 1.4
+- **Header**: Full-width crimson banner with poster headline, authors, formal research title, affiliation logo, and optional QR code
+- **Margins**: `\postermargin{...}` sets header margins, body side margins, body gutters, and bottom margin together
+- **Grid layout**: `postergrid` / `postergridcolumn` provide fixed gutters while column widths remain configurable with fractions
+- **Compatibility**: `postercolumns` still wraps Beamer `columns` for older documents
+- **Typography**: Explicit poster-scale font sizes (headline 82pt, authors/research title 48pt, blocks 48pt, body 36pt)
+- **Standard size**: A0 portrait (841×1189mm) at scale 1.0
 
 See `demo-poster.tex` for complete three-column layout example with all block types, figures, tables, and references.
 
