@@ -70,6 +70,7 @@
 \newcommand{\posterqrwidth}[1]{\def\@posterqrwidth{#1}}
 \newcommand{\posterheadertextwidth}[1]{\def\@posterheadertextwidth{#1}}
 \newlength{\poster@headermargin}
+\newlength{\poster@headerbottommargin}
 \newlength{\poster@bodymargin}
 \newlength{\poster@bottommargin}
 \newlength{\poster@blockpadding}
@@ -79,8 +80,10 @@
 \newcommand{\poster@headerinnerwidth}{\dimexpr\paperwidth-2\poster@headermargin\relax}
 \newcommand{\posterheadermargin}[1]{%
   \setlength{\poster@headermargin}{#1}%
+  \setlength{\poster@headerbottommargin}{\dimexpr3\poster@headermargin/4\relax}%
   \setlength{\poster@accentheight}{\dimexpr#1/4\relax}%
 }
+\newcommand{\posterheaderbottommargin}[1]{\setlength{\poster@headerbottommargin}{#1}}
 \newcommand{\posterbodymargin}[1]{%
   \setlength{\poster@bodymargin}{#1}%
   \setlength{\poster@blockpadding}{\dimexpr3\poster@bodymargin/4\relax}%
@@ -204,7 +207,7 @@
       \end{minipage}%
       \hskip\poster@headermargin
     }%
-    \vskip\poster@headermargin
+    \vskip\poster@headerbottommargin
   \end{beamercolorbox}
 
   % Light crimson accent stripe at bottom of header
@@ -237,8 +240,8 @@
 % These work well for A0 at default scale
 
 % Header typography
-\setbeamerfont{poster headline}{size=\fontsize{82}{96}\selectfont, series=\bfseries}
-\setbeamerfont{poster author}{size=\fontsize{48}{57}\selectfont}
+\setbeamerfont{poster headline}{size=\fontsize{78}{91}\selectfont, series=\bfseries}
+\setbeamerfont{poster author}{size=\fontsize{46}{55}\selectfont}
 \setbeamerfont{poster affiliation}{size=\fontsize{32}{38}\selectfont}
 \setbeamerfont{poster email}{size=\fontsize{28}{34}\selectfont}
 \setbeamerfont{poster qr label}{size=\fontsize{18}{22}\selectfont}
