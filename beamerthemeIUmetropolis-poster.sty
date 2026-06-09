@@ -18,6 +18,7 @@
 \RequirePackage{tikz}
 \RequirePackage{adjustbox}
 \RequirePackage{multicol}
+\RequirePackage{qrcode}
 
 %-------------------------------------------------------------------------------
 % POSTER-SPECIFIC METROPOLIS OPTIONS
@@ -50,8 +51,7 @@
 \setlength{\leftmarginii}{1.5em}
 \setlength{\leftmarginiii}{1.2em}
 
-% Block spacing
-\setbeamersize{text margin left=2cm, text margin right=2cm}
+% Poster margins are initialized below after the margin registers are defined.
 
 %-------------------------------------------------------------------------------
 % POSTER HEADLINE (HEADER BANNER)
@@ -63,6 +63,41 @@
 \newcommand{\posteremail}[1]{\def\@posteremail{#1}}
 \newcommand{\posterlogo}[1]{\def\@posterlogo{#1}}
 \newcommand{\posterfooterlogo}[1]{\def\@posterfooterlogo{#1}}
+\newcommand{\posterheadline}[1]{\def\@posterheadline{#1}}
+\newcommand{\posterqrurl}[1]{\def\@posterqrurl{#1}}
+\newcommand{\posterqrlabel}[1]{\def\@posterqrlabel{#1}}
+\newcommand{\posterqrheight}[1]{\def\@posterqrheight{#1}}
+\newcommand{\posterqrwidth}[1]{\def\@posterqrwidth{#1}}
+\newcommand{\posterheadertextwidth}[1]{\def\@posterheadertextwidth{#1}}
+\newlength{\poster@headermargin}
+\newlength{\poster@bodymargin}
+\newlength{\poster@bottommargin}
+\newlength{\poster@blockpadding}
+\newlength{\poster@accentheight}
+\newlength{\poster@columncontentwidth}
+\newlength{\poster@figurewidth}
+\newcommand{\poster@headerinnerwidth}{\dimexpr\paperwidth-2\poster@headermargin\relax}
+\newcommand{\posterheadermargin}[1]{%
+  \setlength{\poster@headermargin}{#1}%
+  \setlength{\poster@accentheight}{\dimexpr#1/4\relax}%
+}
+\newcommand{\posterbodymargin}[1]{%
+  \setlength{\poster@bodymargin}{#1}%
+  \setlength{\poster@blockpadding}{\dimexpr3\poster@bodymargin/4\relax}%
+  \setbeamersize{text margin left=\poster@bodymargin, text margin right=\poster@bodymargin}%
+}
+\newcommand{\postermargin}[1]{%
+  \posterheadermargin{#1}%
+  \posterbodymargin{#1}%
+  \setlength{\poster@bottommargin}{#1}%
+}
+\newcommand{\posterbottommargin}[1]{\setlength{\poster@bottommargin}{#1}}
+\newcommand{\postermargins}[3]{%
+  \posterheadermargin{#1}%
+  \posterbodymargin{#2}%
+  \posterbottommargin{#3}%
+}
+\newcommand{\postergutter}{\poster@bodymargin}
 
 % Initialize defaults
 \def\@posterauthors{}
@@ -70,63 +105,112 @@
 \def\@posteremail{}
 \def\@posterlogo{}
 \def\@posterfooterlogo{}
+\def\@posterheadline{}
+\def\@posterqrurl{}
+\def\@posterqrlabel{}
+\def\@posterqrheight{6cm}
+\def\@posterqrwidth{6cm}
+\def\@posterheadertextwidth{0.9\linewidth}
+\postermargin{2cm}
 
-% Helper command to make first author bold
-% Assumes authors are separated by \quad
-\RequirePackage{xstring}
-\newcommand{\@formatauthors}[1]{%
-  \StrBefore{#1}{\noexpand\quad}[\firstauthor]%
-  \StrBehind{#1}{\noexpand\quad}[\restauthors]%
-  \IfStrEq{\restauthors}{}{%
-    \textbf{#1}% Only one author
-  }{%
-    \textbf{\firstauthor}\quad\restauthors% Multiple authors
-  }%
+% Poster frames should use fixed body gutters. Beamer's default [t] frame top
+% skip includes stretch, which makes the gap below the headline unpredictable.
+\define@key{beamerframe}{t}[true]{%
+  \beamer@frametopskip=0pt\relax%
+  \beamer@framebottomskip=0pt plus 1fill\relax%
+  \beamer@frametopskipautobreak=\beamer@frametopskip\relax%
+  \beamer@framebottomskipautobreak=\beamer@framebottomskip\relax%
 }
 
-% Headline template - Full-width crimson banner with white text
-% Logo at top center defines where content starts
-\setbeamertemplate{headline}{
-  \begin{beamercolorbox}[wd=\paperwidth, sep=0pt, center]{headline}
-    % IU Logo at top center (defines content start boundary)
-    \vskip1cm
+\newcommand{\@posterheaderbox}[2]{%
+  \parbox{\@posterheadertextwidth}{\centering\usebeamerfont{#1}#2}%
+}
+
+\newcommand{\@postermaintitle}[1]{%
+  \@posterheaderbox{poster headline}{\color{IUCream}#1}%
+  \vskip\dimexpr3\poster@headermargin/4\relax
+}
+
+\newcommand{\@posterresearchtitle}{\color{IULightCream}\inserttitle}
+
+\newcommand{\@posterqrcode}{%
+  \begingroup
+  \usebeamercolor[fg]{headline}%
+  \begin{minipage}[b]{\@posterqrwidth}
+    \centering
+    \qrcode[height=\@posterqrheight]{\@posterqrurl}\\[\dimexpr\postergutter/10\relax]
+    \ifx\@posterqrlabel\@empty\else
+      {\usebeamerfont{poster qr label}\@posterqrlabel}
+    \fi
+  \end{minipage}%
+  \endgroup
+}
+
+\newcommand{\@posterheadercontent}{%
+  \begingroup
+  \centering
     \ifx\@posterlogo\@empty\else
       \@posterlogo
+      \par\vskip\dimexpr\poster@headermargin/4\relax
     \fi
-    \vskip1cm
 
-    % Crimson background banner
-    \begin{beamercolorbox}[wd=\paperwidth, leftskip=2cm, rightskip=2cm, sep=0pt]{headline}
-      \vskip1.5cm
-      \begin{center}
-        % Title
-        {\fontsize{72}{86}\selectfont\bfseries\color{IUCream}\inserttitle}
-        \vskip0.75cm
+    \ifx\@posterheadline\@empty
+      \@postermaintitle{\inserttitle}
+    \else
+      \@postermaintitle{\@posterheadline}
+    \fi
 
-        % Authors
-        \ifx\@posterauthors\@empty\else
-          {\fontsize{48}{58}\selectfont\color{IUCream}\@formatauthors{\@posterauthors}}
-          \vskip0.4cm
+    % Authors and formal paper title share the title text width.
+    \ifx\@posterauthors\@empty
+      \ifx\@posterheadline\@empty\else
+        \@posterheaderbox{poster author}{\@posterresearchtitle}%
+        \vskip\dimexpr\postergutter/4\relax
+      \fi
+    \else
+      \@posterheaderbox{poster author}{%
+        {\color{IUCream}\@posterauthors}%
+        \ifx\@posterheadline\@empty\else\\[\dimexpr3\postergutter/20\relax]\@posterresearchtitle\fi}%
+      \vskip\dimexpr\postergutter/4\relax
+    \fi
+
+    % Affiliation
+    \ifx\@posteraffiliation\@empty\else
+      {\usebeamerfont{poster affiliation}\color{IULightCream}\@posteraffiliation}
+    \fi
+
+    % Email
+    \ifx\@posteremail\@empty\else
+      \vskip\dimexpr\postergutter/4\relax
+      {\usebeamerfont{poster email}\color{IULightCream}\texttt{\@posteremail}}
+    \fi
+  \par
+  \endgroup
+}
+
+% Headline template - compact full-width crimson banner with white text.
+% If \posterheadline is set, use it as the large takeaway and place the formal
+% paper title after the authors.
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth, sep=0pt, vmode]{headline}
+    \vskip\poster@headermargin
+    \noindent\hbox to\paperwidth{%
+      \hskip\poster@headermargin
+      \begin{minipage}{\poster@headerinnerwidth}
+        \@posterheadercontent
+        \ifx\@posterqrurl\@empty\else
+          \par\nointerlineskip
+          \noindent\makebox[\linewidth][r]{\smash{\@posterqrcode}}%
         \fi
-
-        % Affiliation
-        \ifx\@posteraffiliation\@empty\else
-          {\fontsize{48}{58}\selectfont\color{IULightCream}\@posteraffiliation}
-        \fi
-
-        % Email
-        \ifx\@posteremail\@empty\else
-          \vskip0.2cm
-          {\fontsize{40}{48}\selectfont\color{IULightCream}\texttt{\@posteremail}}
-        \fi
-      \end{center}
-      \vskip1.5cm
-    \end{beamercolorbox}
-
-    % Light crimson accent stripe at bottom of header
-    \begin{beamercolorbox}[wd=\paperwidth, ht=0.5cm, sep=0pt]{headline accent}
-    \end{beamercolorbox}
+      \end{minipage}%
+      \hskip\poster@headermargin
+    }%
+    \vskip\poster@headermargin
   \end{beamercolorbox}
+
+  % Light crimson accent stripe at bottom of header
+  \begin{beamercolorbox}[wd=\paperwidth, ht=\poster@accentheight, sep=0pt, vmode]{headline accent}
+  \end{beamercolorbox}
+  \vskip\poster@bodymargin
 }
 
 %-------------------------------------------------------------------------------
@@ -137,11 +221,11 @@
 % Logo height automatically defines the content margin
 \setbeamertemplate{footline}{
   \begin{beamercolorbox}[wd=\paperwidth, center]{footline}
-    \vskip1cm
+    \vskip\poster@bottommargin
     \ifx\@posterfooterlogo\@empty\else
       \@posterfooterlogo
+      \vskip\poster@bottommargin
     \fi
-    \vskip1cm
   \end{beamercolorbox}
 }
 
@@ -152,17 +236,18 @@
 % Larger font sizes for poster readability (scale with poster size)
 % These work well for A0 at default scale
 
-% Title (in headline) - Huge (explicit size for posters)
-\setbeamerfont{title}{size=\fontsize{80}{96}\selectfont, series=\bfseries}
+% Header typography
+\setbeamerfont{poster headline}{size=\fontsize{82}{96}\selectfont, series=\bfseries}
+\setbeamerfont{poster author}{size=\fontsize{48}{57}\selectfont}
+\setbeamerfont{poster affiliation}{size=\fontsize{32}{38}\selectfont}
+\setbeamerfont{poster email}{size=\fontsize{28}{34}\selectfont}
+\setbeamerfont{poster qr label}{size=\fontsize{18}{22}\selectfont}
 
-% Authors - Large (explicit size for posters)
-\setbeamerfont{author}{size=\fontsize{48}{58}\selectfont}
-
-% Affiliation/Institute - Large (explicit size for posters)
-\setbeamerfont{institute}{size=\fontsize{48}{58}\selectfont}
-
-% Email - large (explicit size for posters)
-\setbeamerfont{email}{size=\fontsize{40}{48}\selectfont}
+% Standard title metadata fonts mirror the poster header defaults.
+\setbeamerfont{title}{parent=poster headline}
+\setbeamerfont{author}{parent=poster author}
+\setbeamerfont{institute}{parent=poster affiliation}
+\setbeamerfont{email}{parent=poster email}
 
 % Frame title (section headers in poster)
 \setbeamerfont{frametitle}{size=\fontsize{64}{76}\selectfont, series=\bfseries}
@@ -208,52 +293,30 @@
 %-------------------------------------------------------------------------------
 
 % Increase block spacing for posters
-\setbeamertemplate{block begin}{
-  \vskip1.5ex
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm]{block title}
-    \usebeamerfont*{block title}\insertblocktitle
+\newcommand{\poster@blockbegin}[2]{%
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=\poster@blockpadding, rightskip=\poster@blockpadding, sep=\poster@blockpadding]{#1}
+    \usebeamerfont*{#1}\insertblocktitle
   \end{beamercolorbox}
-  \vskip0.5ex
-  \usebeamerfont{block body}
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm, vmode]{block body}
+  \nointerlineskip
+  \usebeamerfont{#2}
+  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=\poster@blockpadding, rightskip=\poster@blockpadding, sep=\poster@blockpadding, vmode]{#2}
 }
 
-\setbeamertemplate{block end}{
+\newcommand{\poster@blockend}{%
   \end{beamercolorbox}
-  \vskip1.5ex
+  \vskip\postergutter
 }
+
+\setbeamertemplate{block begin}{\poster@blockbegin{block title}{block body}}
+\setbeamertemplate{block end}{\poster@blockend}
 
 % Alert block
-\setbeamertemplate{block alerted begin}{
-  \vskip1.5ex
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm]{block title alerted}
-    \usebeamerfont*{block title alerted}\insertblocktitle
-  \end{beamercolorbox}
-  \vskip0.5ex
-  \usebeamerfont{block body alerted}
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm, vmode]{block body alerted}
-}
-
-\setbeamertemplate{block alerted end}{
-  \end{beamercolorbox}
-  \vskip1.5ex
-}
+\setbeamertemplate{block alerted begin}{\poster@blockbegin{block title alerted}{block body alerted}}
+\setbeamertemplate{block alerted end}{\poster@blockend}
 
 % Example block
-\setbeamertemplate{block example begin}{
-  \vskip1.5ex
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm]{block title example}
-    \usebeamerfont*{block title example}\insertblocktitle
-  \end{beamercolorbox}
-  \vskip0.5ex
-  \usebeamerfont{block body example}
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=1.5cm, rightskip=1.5cm, sep=1.5cm, vmode]{block body example}
-}
-
-\setbeamertemplate{block example end}{
-  \end{beamercolorbox}
-  \vskip1.5ex
-}
+\setbeamertemplate{block example begin}{\poster@blockbegin{block title example}{block body example}}
+\setbeamertemplate{block example end}{\poster@blockend}
 
 %-------------------------------------------------------------------------------
 % ITEMIZE/ENUMERATE CUSTOMIZATION FOR POSTERS
@@ -270,27 +333,61 @@
 
 % Command to create a section header (not a block, just styled text)
 \newcommand{\postersection}[1]{%
-  \vskip1cm
+  \vskip\dimexpr\postergutter/2\relax
   {\usebeamerfont{frametitle}\color{IUCrimson}\textbf{#1}}
-  \vskip0.5cm
-  {\color{IULightCrimson}\rule{\linewidth}{0.3cm}}
-  \vskip0.5cm
+  \vskip\dimexpr\postergutter/4\relax
+  {\color{IULightCrimson}\rule{\linewidth}{\dimexpr3\postergutter/20\relax}}
+  \vskip\dimexpr\postergutter/4\relax
 }
 
-% Command for two-column layout within poster
-\newenvironment{postercolumns}[1][2]{
-  \begin{columns}[T]
-}{
+% Compatibility wrapper for the original postercolumns API.
+\newenvironment{postercolumns}[1][T]{%
+  \begin{columns}[#1]
+}{%
   \end{columns}
+}
+
+% Grid helpers with fixed gutters matching \postergutter. The optional
+% postergrid argument is the column count used to reserve gutter space.
+\newif\ifposter@firstcolumn
+\newenvironment{postergrid}[1][3]{%
+  \par\nointerlineskip\noindent
+  \setlength{\poster@columncontentwidth}{%
+    \dimexpr\linewidth-\dimexpr\numexpr#1-1\relax\postergutter\relax\relax}%
+  \poster@firstcolumntrue
+  \hbox\bgroup\ignorespaces
+}{%
+  \unskip\egroup
+  \par\ignorespacesafterend
+}
+
+\newenvironment{postergridcolumn}[2][t]{%
+  \ifposter@firstcolumn
+    \global\poster@firstcolumnfalse
+  \else
+    \hspace{\postergutter}%
+  \fi
+  \begin{minipage}[#1]{\dimexpr#2\poster@columncontentwidth\relax}%
+  \raggedright\ignorespaces
+}{%
+  \end{minipage}%
+  \ignorespacesafterend
 }
 
 % Command for figure with caption
 \newcommand{\posterfigure}[3][1.0]{%
-  \begin{center}
-    \includegraphics[width=#1\linewidth]{#2}
-    \par\vskip0.5cm
-    {\usebeamerfont{caption}\color{IUBlack}#3}
-  \end{center}
+  \par
+  \begingroup
+    \setlength{\poster@figurewidth}{\dimexpr\linewidth-2\poster@blockpadding\relax}%
+    \ifdim\poster@figurewidth<1pt
+      \setlength{\poster@figurewidth}{\linewidth}%
+    \fi
+    \centering
+    \includegraphics[width=#1\poster@figurewidth]{#2}%
+    \par\vskip\dimexpr\postergutter/4\relax
+    \parbox{\poster@figurewidth}{\centering\usebeamerfont{caption}\color{IUBlack}#3}%
+    \par
+  \endgroup
 }
 
 %-------------------------------------------------------------------------------

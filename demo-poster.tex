@@ -18,7 +18,6 @@
 \usepackage{colortbl}  % For \rowcolor in tables
 \usepackage{tikz}
 \usepackage{pgfplots}
-\usepackage{qrcode}  % For QR codes (optional)
 \usepackage{multicol}
 
 \pgfplotsset{compat=1.18}
@@ -27,33 +26,25 @@
 % POSTER METADATA
 %-------------------------------------------------------------------------------
 
-\title{Your Research Title: A Modern IU-Branded Poster Template}
+\postermargin{2cm}
+\posterheadline{Poster Headline: A Modern IU-Branded Template}
+\title{Your Research Title: A Formal Study of Methods, Results, and Impact}
 
 % Authors (use \and to separate, or manual formatting)
 \posterauthors{
-  \textbf{First Author}$^1$,
-  Second Author$^1$,
-  Third Author$^2$
+  \textbf{First Author},
+  Second Author,
+  Third Author
 }
 
 % Affiliation
 \posteraffiliation{
-  $^1$School of Informatics, Computing, and Engineering, Indiana University \\
-  $^2$Department of Statistics, Indiana University
+  \includegraphics[height=3.4cm]{logos/IU Standard Horizontal Lockup Reversed.png}
 }
-
-% Contact email (optional)
-\posteremail{firstauthor@iu.edu}
-
-% Logo in header (centered at top)
-\posterlogo{
-  \includegraphics[height=5cm]{logos/IU Trident Tab Reversed.pdf}
-}
-
-% Footer logo (bottom of poster)
-\posterfooterlogo{
-  \includegraphics[height=4cm]{logos/IU Standard Horizontal Lockup.pdf}
-}
+\posterqrurl{https://arxiv.org/abs/2024.12345}
+\posterqrheight{5.5cm}
+\posterqrwidth{6cm}
+\posterqrlabel{Scan for full paper}
 
 %-------------------------------------------------------------------------------
 % CUSTOM COMMANDS FOR THIS POSTER
@@ -71,12 +62,12 @@
 \begin{frame}[t]  % [t] aligns content to top
 
 % Three-column layout (standard for A0 academic posters)
-\begin{columns}[T]
+\begin{postergrid}[3]
 
 %=============================================================================
 % LEFT COLUMN
 %=============================================================================
-\begin{column}{.30\textwidth}
+\begin{postergridcolumn}{0.333333}
 
 %-----------------------------------------------------------------------------
 \begin{block}{Introduction}
@@ -132,12 +123,12 @@ Despite these advances, critical challenges remain:
 
 \end{alertblock}
 
-\end{column}
+\end{postergridcolumn}
 
 %=============================================================================
 % MIDDLE COLUMN
 %=============================================================================
-\begin{column}{.30\textwidth}
+\begin{postergridcolumn}{0.333333}
 
 %-----------------------------------------------------------------------------
 \begin{block}{Methodology}
@@ -217,12 +208,12 @@ Our method achieves \highlight{89\% accuracy}, a \highlight{7\% improvement} ove
 
 %-----------------------------------------------------------------------------
 
-\end{column}
+\end{postergridcolumn}
 
 %=============================================================================
 % RIGHT COLUMN
 %=============================================================================
-\begin{column}{.30\textwidth}
+\begin{postergridcolumn}{0.333333}
 
 %-----------------------------------------------------------------------------
 \begin{exampleblock}{Key Findings}
@@ -269,22 +260,9 @@ This research makes three key contributions:
 
 \end{block}
 
-%-----------------------------------------------------------------------------
-\begin{block}{Full Paper \& Code}
+\end{postergridcolumn}
 
-\begin{center}
-\qrcode[height=5.5cm]{https://arxiv.org/abs/2024.12345}
-\par\vskip0.5cm
-{\usebeamerfont{caption}\textbf{Scan for full paper}}
-\par\vskip0.3cm
-{\usebeamerfont{caption name}\texttt{arxiv.org/abs/2024.12345}}
-\end{center}
-
-\end{block}
-
-\end{column}
-
-\end{columns}
+\end{postergrid}
 
 \end{frame}
 
