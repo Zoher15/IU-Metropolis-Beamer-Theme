@@ -19,6 +19,7 @@
 \RequirePackage{adjustbox}
 \RequirePackage{multicol}
 \RequirePackage{qrcode}
+\RequirePackage{xparse}
 
 %-------------------------------------------------------------------------------
 % POSTER-SPECIFIC METROPOLIS OPTIONS
@@ -73,10 +74,19 @@
 \newlength{\poster@headerbottommargin}
 \newlength{\poster@bodymargin}
 \newlength{\poster@bottommargin}
+\newlength{\poster@blockmargin}
 \newlength{\poster@blockpadding}
 \newlength{\poster@accentheight}
 \newlength{\poster@columncontentwidth}
 \newlength{\poster@figurewidth}
+\newlength{\poster@cellwidth}
+\newlength{\poster@cellheight}
+\newlength{\poster@fillblockbodyheight}
+\newlength{\poster@fillblockcontentheight}
+\newbox\poster@fillblocktitlebox
+\newbox\poster@fillblockbodybox
+\newif\ifposter@inlayoutcell
+\newcommand{\posterlayoutheight}{\textheight}
 \newcommand{\poster@headerinnerwidth}{\dimexpr\paperwidth-2\poster@headermargin\relax}
 \newcommand{\posterheadermargin}[1]{%
   \setlength{\poster@headermargin}{#1}%
@@ -95,6 +105,7 @@
   \setlength{\poster@bottommargin}{#1}%
 }
 \newcommand{\posterbottommargin}[1]{\setlength{\poster@bottommargin}{#1}}
+\newcommand{\posterblockmargin}[1]{\setlength{\poster@blockmargin}{#1}}
 \newcommand{\postermargins}[3]{%
   \posterheadermargin{#1}%
   \posterbodymargin{#2}%
@@ -115,6 +126,7 @@
 \def\@posterqrwidth{6cm}
 \def\@posterheadertextwidth{0.9\linewidth}
 \postermargin{2cm}
+\posterblockmargin{\dimexpr\postergutter/4\relax}
 
 % Poster frames should use fixed body gutters. Beamer's default [t] frame top
 % skip includes stretch, which makes the gap below the headline unpredictable.
@@ -256,9 +268,9 @@
 \setbeamerfont{frametitle}{size=\fontsize{64}{76}\selectfont, series=\bfseries}
 
 % Block titles (regular, alert, example)
-\setbeamerfont{block title}{size=\fontsize{48}{58}\selectfont, series=\bfseries}
-\setbeamerfont{block title alerted}{size=\fontsize{48}{58}\selectfont, series=\bfseries}
-\setbeamerfont{block title example}{size=\fontsize{48}{58}\selectfont, series=\bfseries}
+\setbeamerfont*{block title}{parent=poster author, series=\bfseries}
+\setbeamerfont*{block title alerted}{parent=poster author, series=\bfseries}
+\setbeamerfont*{block title example}{parent=poster author, series=\bfseries}
 
 % Block body text (regular, alert, example)
 \setbeamerfont{block body}{size=\fontsize{36}{43}\selectfont}
@@ -295,18 +307,38 @@
 % POSTER BLOCK CUSTOMIZATION
 %-------------------------------------------------------------------------------
 
-% Increase block spacing for posters
+% Block body padding is a global poster length. Set it with
+% \posterblockmargin{<length>}; horizontal and vertical insets use the same
+% value for every block.
+\newlength{\poster@blockcontentwidth}
+\newlength{\poster@blockcontentpad}
+\newcommand{\poster@computeblockcontentpad}{%
+  \setlength{\poster@blockcontentpad}{\poster@blockmargin}%
+  \setlength{\poster@blockcontentwidth}{\dimexpr\linewidth-2\poster@blockcontentpad\relax}%
+  \ifdim\poster@blockcontentwidth<0pt
+    \setlength{\poster@blockcontentwidth}{0pt}%
+  \fi
+}
+
 \newcommand{\poster@blockbegin}[2]{%
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=\poster@blockpadding, rightskip=\poster@blockpadding, sep=\poster@blockpadding]{#1}
-    \usebeamerfont*{#1}\insertblocktitle
+  \begin{beamercolorbox}[rounded=false, shadow=false, center, sep=0pt]{#1}
+    \usebeamerfont{#1}\strut\insertblocktitle\strut
   \end{beamercolorbox}
   \nointerlineskip
-  \usebeamerfont{#2}
-  \begin{beamercolorbox}[rounded=false, shadow=false, leftskip=\poster@blockpadding, rightskip=\poster@blockpadding, sep=\poster@blockpadding, vmode]{#2}
+  \usebeamerfont{#2}%
+  \begin{beamercolorbox}[rounded=false, shadow=false, sep=0pt, vmode]{#2}%
+    \poster@computeblockcontentpad%
+    \vspace{\poster@blockcontentpad}%
+    \noindent\hspace{\poster@blockcontentpad}%
+    \begin{minipage}{\poster@blockcontentwidth}%
+      \ignorespaces
 }
 
 \newcommand{\poster@blockend}{%
-  \end{beamercolorbox}
+      \unskip
+    \end{minipage}%
+    \par\vspace{\poster@blockcontentpad}%
+  \end{beamercolorbox}%
   \vskip\postergutter
 }
 
@@ -343,45 +375,280 @@
   \vskip\dimexpr\postergutter/4\relax
 }
 
-% Compatibility wrapper for the original postercolumns API.
-\newenvironment{postercolumns}[1][T]{%
-  \begin{columns}[#1]
-}{%
-  \end{columns}
-}
+% Fixed geometry grid. Rows and columns are proportional weights; gutters are
+% subtracted before space is distributed. Each cell has a fixed width and height,
+% so grids can be nested recursively inside cells.
+\ExplSyntaxOn
+\clist_new:N \l_poster_layout_rows_clist
+\clist_new:N \l_poster_layout_cols_clist
+\dim_new:N \l_poster_layout_grid_width_dim
+\dim_new:N \l_poster_layout_grid_height_dim
+\dim_new:N \l_poster_layout_available_height_dim
+\dim_new:N \l_poster_layout_available_width_dim
+\dim_new:N \l_poster_layout_current_row_height_dim
+\dim_new:N \l_poster_layout_current_col_width_dim
+\dim_new:N \l_poster_fillblock_title_height_dim
+\dim_new:N \l_poster_fillblock_body_natural_height_dim
+\fp_new:N \l_poster_layout_row_total_fp
+\fp_new:N \l_poster_layout_col_total_fp
+\int_new:N \l_poster_layout_row_count_int
+\int_new:N \l_poster_layout_col_count_int
+\int_new:N \l_poster_layout_row_index_int
+\int_new:N \l_poster_layout_col_index_int
+\tl_new:N \l_poster_layout_current_row_weight_tl
+\tl_new:N \l_poster_layout_current_col_weight_tl
+\tl_new:N \l_poster_fillblock_title_color_tl
+\tl_new:N \l_poster_fillblock_body_color_tl
 
-% Grid helpers with fixed gutters matching \postergutter. The optional
-% postergrid argument is the column count used to reserve gutter space.
-\newif\ifposter@firstcolumn
-\newenvironment{postergrid}[1][3]{%
-  \par\nointerlineskip\noindent
-  \setlength{\poster@columncontentwidth}{%
-    \dimexpr\linewidth-\dimexpr\numexpr#1-1\relax\postergutter\relax\relax}%
-  \poster@firstcolumntrue
-  \hbox\bgroup\ignorespaces
-}{%
-  \unskip\egroup
-  \par\ignorespacesafterend
-}
+\NewDocumentEnvironment{posterlayoutgrid}{O{\posterlayoutheight} m}
+  {\poster_layout_grid_begin:nn {#1} {#2}}
+  {\poster_layout_grid_end:}
 
-\newenvironment{postergridcolumn}[2][t]{%
-  \ifposter@firstcolumn
-    \global\poster@firstcolumnfalse
-  \else
-    \hspace{\postergutter}%
-  \fi
-  \begin{minipage}[#1]{\dimexpr#2\poster@columncontentwidth\relax}%
-  \raggedright\ignorespaces
-}{%
-  \end{minipage}%
-  \ignorespacesafterend
-}
+\NewDocumentCommand{\posterlayoutrow}{m +m}
+  {\poster_layout_row:nn {#1} {#2}}
+
+\NewDocumentCommand{\postercell}{+m}
+  {\poster_layout_cell:n {#1}}
+
+\cs_new_protected:Npn \poster_layout_grid_begin:nn #1 #2
+  {
+    \par\nointerlineskip\noindent
+    \group_begin:
+    \dim_set:Nn \l_poster_layout_grid_width_dim { \linewidth }
+    \dim_set:Nn \l_poster_layout_grid_height_dim { #1 }
+    \clist_set:Nn \l_poster_layout_rows_clist { #2 }
+    \int_set:Nn \l_poster_layout_row_count_int
+      { \clist_count:N \l_poster_layout_rows_clist }
+    \dim_set:Nn \l_poster_layout_available_height_dim
+      {
+        \l_poster_layout_grid_height_dim
+        - \int_eval:n { \l_poster_layout_row_count_int - 1 } \postergutter
+      }
+    \fp_zero:N \l_poster_layout_row_total_fp
+    \clist_map_inline:Nn \l_poster_layout_rows_clist
+      { \fp_add:Nn \l_poster_layout_row_total_fp {##1} }
+    \int_zero:N \l_poster_layout_row_index_int
+    \vbox to \dim_use:N \l_poster_layout_grid_height_dim \bgroup
+      \offinterlineskip
+      \ignorespaces
+  }
+
+\cs_new_protected:Npn \poster_layout_grid_end:
+  {
+      \unskip
+    \egroup
+    \par\ignorespacesafterend
+    \group_end:
+  }
+
+\cs_new_protected:Npn \poster_layout_row:nn #1 #2
+  {
+    \int_incr:N \l_poster_layout_row_index_int
+    \tl_set:Nx \l_poster_layout_current_row_weight_tl
+      {
+        \clist_item:Nn \l_poster_layout_rows_clist
+          { \int_use:N \l_poster_layout_row_index_int }
+      }
+    \dim_set:Nn \l_poster_layout_current_row_height_dim
+      {
+        \fp_eval:n
+          {
+            ( \l_poster_layout_current_row_weight_tl )
+            / ( \fp_use:N \l_poster_layout_row_total_fp )
+          }
+        \l_poster_layout_available_height_dim
+      }
+    \clist_set:Nn \l_poster_layout_cols_clist { #1 }
+    \int_set:Nn \l_poster_layout_col_count_int
+      { \clist_count:N \l_poster_layout_cols_clist }
+    \dim_set:Nn \l_poster_layout_available_width_dim
+      {
+        \l_poster_layout_grid_width_dim
+        - \int_eval:n { \l_poster_layout_col_count_int - 1 } \postergutter
+      }
+    \fp_zero:N \l_poster_layout_col_total_fp
+    \clist_map_inline:Nn \l_poster_layout_cols_clist
+      { \fp_add:Nn \l_poster_layout_col_total_fp {##1} }
+    \int_zero:N \l_poster_layout_col_index_int
+    \hbox to \dim_use:N \l_poster_layout_grid_width_dim \bgroup
+      #2
+    \egroup
+    \int_compare:nNnT
+      { \l_poster_layout_row_index_int } < { \l_poster_layout_row_count_int }
+      { \vskip\postergutter }
+  }
+
+\cs_new_protected:Npn \poster_layout_cell:n #1
+  {
+    \int_incr:N \l_poster_layout_col_index_int
+    \int_compare:nNnT { \l_poster_layout_col_index_int } > { 1 }
+      { \hskip\postergutter }
+    \tl_set:Nx \l_poster_layout_current_col_weight_tl
+      {
+        \clist_item:Nn \l_poster_layout_cols_clist
+          { \int_use:N \l_poster_layout_col_index_int }
+      }
+    \dim_set:Nn \l_poster_layout_current_col_width_dim
+      {
+        \fp_eval:n
+          {
+            ( \l_poster_layout_current_col_weight_tl )
+            / ( \fp_use:N \l_poster_layout_col_total_fp )
+          }
+        \l_poster_layout_available_width_dim
+      }
+    \begin{minipage}[t][\dim_use:N \l_poster_layout_current_row_height_dim][t]
+      { \dim_use:N \l_poster_layout_current_col_width_dim }
+      \raggedright
+      \setlength{\poster@cellwidth}{\dim_use:N \l_poster_layout_current_col_width_dim}%
+      \setlength{\poster@cellheight}{\dim_use:N \l_poster_layout_current_row_height_dim}%
+      \poster@inlayoutcelltrue
+      \renewcommand{\posterlayoutheight}{\poster@cellheight}%
+      \ignorespaces
+      #1
+      \unskip
+    \end{minipage}%
+  }
+
+\NewDocumentEnvironment{posterfillblock}{O{block} m +b}
+  {\poster_fillblock:nnn {#1} {#2} {#3}}
+  {}
+
+\cs_new_protected:Npn \poster_fillblock_set_style:n #1
+  {
+    \str_case:nnF {#1}
+      {
+        {block}
+          {
+            \tl_set:Nn \l_poster_fillblock_title_color_tl { block~title }
+            \tl_set:Nn \l_poster_fillblock_body_color_tl { block~body }
+          }
+        {alert}
+          {
+            \tl_set:Nn \l_poster_fillblock_title_color_tl { block~title~alerted }
+            \tl_set:Nn \l_poster_fillblock_body_color_tl { block~body~alerted }
+          }
+        {alertblock}
+          {
+            \tl_set:Nn \l_poster_fillblock_title_color_tl { block~title~alerted }
+            \tl_set:Nn \l_poster_fillblock_body_color_tl { block~body~alerted }
+          }
+        {example}
+          {
+            \tl_set:Nn \l_poster_fillblock_title_color_tl { block~title~example }
+            \tl_set:Nn \l_poster_fillblock_body_color_tl { block~body~example }
+          }
+        {exampleblock}
+          {
+            \tl_set:Nn \l_poster_fillblock_title_color_tl { block~title~example }
+            \tl_set:Nn \l_poster_fillblock_body_color_tl { block~body~example }
+          }
+      }
+      {
+        \PackageWarning{beamerthemeIUmetropolis-poster}
+          {Unknown~posterfillblock~style~`#1'.~Using~regular~block}
+        \tl_set:Nn \l_poster_fillblock_title_color_tl { block~title }
+        \tl_set:Nn \l_poster_fillblock_body_color_tl { block~body }
+      }
+  }
+
+\cs_new_protected:Npn \poster_fillblock:nnn #1 #2 #3
+  {
+    \poster_fillblock_set_style:n {#1}
+    \ifposter@inlayoutcell
+      \poster_fillblock_typeset:nn {#2} {#3}
+    \else
+      \PackageWarning{beamerthemeIUmetropolis-poster}
+        {posterfillblock~`#2'~used~outside~a~postercell.~Falling~back~to~block}
+      \begin{block}{#2}
+        #3
+      \end{block}
+    \fi
+  }
+
+\cs_new_protected:Npn \poster_fillblock_typeset:nn #1 #2
+  {
+    \setbox\poster@fillblocktitlebox=\vbox
+      {
+        \hsize=\poster@cellwidth
+        \begin{beamercolorbox}
+          [wd=\poster@cellwidth, rounded=false, shadow=false, center, sep=0pt]
+          { \tl_use:N \l_poster_fillblock_title_color_tl }
+          \usebeamerfont{\tl_use:N \l_poster_fillblock_title_color_tl}%
+          \strut #1\strut
+        \end{beamercolorbox}
+      }
+    \dim_set:Nn \l_poster_fillblock_title_height_dim
+      { \ht\poster@fillblocktitlebox + \dp\poster@fillblocktitlebox }
+    \setlength{\poster@fillblockbodyheight}
+      {
+        \dimexpr\poster@cellheight
+        - \dim_use:N \l_poster_fillblock_title_height_dim\relax
+      }
+    \ifdim\poster@fillblockbodyheight<0pt
+      \PackageWarning{beamerthemeIUmetropolis-poster}
+        {posterfillblock~`#1'~has~no~body~height.~Increase~the~cell~height}
+      \setlength{\poster@fillblockbodyheight}{0pt}%
+    \fi
+    \begingroup
+      \setlength{\linewidth}{\poster@cellwidth}%
+      \poster@computeblockcontentpad
+      \setlength{\poster@fillblockcontentheight}
+        {\dimexpr\poster@fillblockbodyheight-2\poster@blockcontentpad\relax}%
+      \ifdim\poster@fillblockcontentheight<0pt
+        \setlength{\poster@fillblockcontentheight}{0pt}%
+      \fi
+      \setbox\poster@fillblockbodybox=\vbox
+        {
+          \hsize=\poster@blockcontentwidth
+          \begin{minipage}[t]{\poster@blockcontentwidth}
+            \usebeamerfont{\tl_use:N \l_poster_fillblock_body_color_tl}%
+            \ignorespaces #2\unskip
+          \end{minipage}
+        }
+      \dim_set:Nn \l_poster_fillblock_body_natural_height_dim
+        { \ht\poster@fillblockbodybox + \dp\poster@fillblockbodybox }
+      \ifdim\dim_use:N \l_poster_fillblock_body_natural_height_dim>\poster@fillblockcontentheight
+        \PackageWarning{beamerthemeIUmetropolis-poster}
+          {Content~in~posterfillblock~`#1'~exceeds~its~assigned~cell~height.~
+           Reduce~content,~font~size,~image~scale,~or~change~row~proportions}
+      \fi
+      \ifdim\dim_use:N \l_poster_fillblock_body_natural_height_dim<\poster@fillblockcontentheight
+        \PackageWarning{beamerthemeIUmetropolis-poster}
+          {Content~in~posterfillblock~`#1'~underfills~its~assigned~cell~height.~
+           Increase~content,~image~scale,~font~size,~or~change~row~proportions}
+      \fi
+      \box\poster@fillblocktitlebox
+      \nointerlineskip
+      \begin{beamercolorbox}
+        [wd=\poster@cellwidth, ht=\poster@fillblockbodyheight, dp=0pt,
+         rounded=false, shadow=false, sep=0pt, vmode]
+        { \tl_use:N \l_poster_fillblock_body_color_tl }
+        \vbox to \poster@fillblockbodyheight
+          {
+            \vskip\poster@blockcontentpad
+            \noindent\hbox to \poster@cellwidth
+              {
+                \hskip\poster@blockcontentpad
+                \vbox to \poster@fillblockcontentheight
+                  {
+                    \unvbox\poster@fillblockbodybox
+                    \vfil
+                  }
+                \hfil
+              }
+            \vskip\poster@blockcontentpad
+          }
+      \end{beamercolorbox}
+    \endgroup
+  }
+\ExplSyntaxOff
 
 % Command for figure with caption
 \newcommand{\posterfigure}[3][1.0]{%
   \par
   \begingroup
-    \setlength{\poster@figurewidth}{\dimexpr\linewidth-2\poster@blockpadding\relax}%
+    \setlength{\poster@figurewidth}{\dimexpr\linewidth-2\poster@blockmargin\relax}%
     \ifdim\poster@figurewidth<1pt
       \setlength{\poster@figurewidth}{\linewidth}%
     \fi
