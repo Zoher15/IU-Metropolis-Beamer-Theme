@@ -19,8 +19,8 @@ A modern, professional Beamer presentation theme combining the clean design of M
 **Three simple steps:**
 
 1. **Get the files**: Clone or download this repository
-2. **Install fonts**: See [Installation](#installation) below (5 minutes)
-3. **Start presenting**: Copy `beamerthemeIUmetropolis.sty` to your project and use it!
+2. **Keep the bundled fonts**: Leave `fonts-for-overleaf/` beside the theme file
+3. **Start presenting**: Keep the theme directory intact and load it from your project
 
 ### Your First Presentation
 
@@ -65,9 +65,11 @@ That's it! See [demo.tex](demo.tex) for more examples.
 - `IU-brand-assets.md` - Complete IU brand color and font reference
 - `README.md` - This file
 - `logos/` - IU logo files (trident, lockups)
-- `IU-Brand-Fonts/` - IU official fonts (install separately)
+- `fonts-for-overleaf/` - Bundled IU fonts loaded directly by the theme
 
-**Note**: Font files should be installed separately. See Troubleshooting section below.
+**Note**: The theme loads its bundled fonts directly with XeLaTeX. System font
+installation is optional and is used only as a fallback when the bundled font
+directory is unavailable.
 
 ## Design Features
 
@@ -306,15 +308,26 @@ kpsewhich beamerthememetropolis.sty
 # Should return a path like: /usr/share/texlive/.../beamerthememetropolis.sty
 ```
 
-### 2. Install IU Brand Fonts
+### 2. Keep the Bundled IU Brand Fonts
 
-Extract and install the IU fonts:
+No font installation is required. Keep the font directory beside the theme:
+
+```text
+IUmetropolis/
+├── beamerthemeIUmetropolis.sty
+├── fonts-for-overleaf/
+└── logos/
+```
+
+The theme discovers its own directory and loads the `.otf` and `.ttf` files
+from `fonts-for-overleaf/`, so the complete directory can be moved or renamed.
+
+For a system-wide theme installation without the bundled directory, install
+the IU fonts into your user font directory instead:
 
 ```bash
-cd IU-Brand-Fonts
-# Install to user fonts directory
 mkdir -p ~/.local/share/fonts
-find . \( -name "*.ttf" -o -name "*.otf" \) -exec cp {} ~/.local/share/fonts/ \;
+cp fonts-for-overleaf/*.{ttf,otf} ~/.local/share/fonts/
 fc-cache -f -v
 ```
 
@@ -327,16 +340,21 @@ fc-list | grep -i "azeret mono"
 
 ### 3. Use the Theme
 
-Copy `beamerthemeIUmetropolis.sty` to your presentation directory or install it system-wide:
+For a portable project, keep the complete theme directory inside or beside the
+presentation project and add that directory to TeX's input path:
 
-```bash
-# Option 1: Copy to your project
-cp beamerthemeIUmetropolis.sty /path/to/your/presentation/
-
-# Option 2: Install system-wide (Linux)
-sudo cp beamerthemeIUmetropolis.sty /usr/share/texlive/texmf-dist/tex/latex/beamer/
-sudo texhash
+```latex
+\makeatletter
+\def\input@path{{IUmetropolis/}}
+\makeatother
+\usetheme{IUmetropolis}
 ```
+
+The path may be relative or absolute. Font paths remain relative to the loaded
+theme file, so moving the complete `IUmetropolis/` directory does not require
+editing the theme. For a system-wide installation, install the theme file in a
+TeX search directory and install the IU fonts with Fontconfig as described
+above.
 
 ## Troubleshooting
 
@@ -350,13 +368,13 @@ sudo texhash
 
 **Error**: `Package fontspec Error: The font "BentonSans-Book" cannot be found`
 
-**Solution**: Make sure IU fonts are installed:
+**Solution**: Make sure `fonts-for-overleaf/` is beside
+`beamerthemeIUmetropolis.sty`. If the bundled directory is intentionally
+omitted, install the fonts as a system fallback:
 
 ```bash
-# Extract and install fonts
-unzip IU-Brand-Fonts.zip
 mkdir -p ~/.local/share/fonts
-find IU-Brand-Fonts/ \( -name "*.ttf" -o -name "*.otf" \) -exec cp {} ~/.local/share/fonts/ \;
+cp fonts-for-overleaf/*.{ttf,otf} ~/.local/share/fonts/
 fc-cache -f -v
 ```
 

@@ -5,7 +5,13 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{beamerthemeIUmetropolis}[2025/11/15 IU Metropolis Beamer Theme]
+\ProvidesPackage{beamerthemeIUmetropolis}[2026/07/14 IU Metropolis Beamer Theme]
+
+% Capture the directory containing this theme before loading nested packages.
+% This lets fontspec find the bundled fonts even when the entire theme directory
+% is moved, renamed, or loaded through \input@path/TEXINPUTS.
+\edef\IU@themedir{\@currpath}
+\edef\IU@fontdir{\IU@themedir fonts-for-overleaf/}
 
 % Load base Metropolis theme
 \usetheme{metropolis}
@@ -115,20 +121,58 @@
 % IU BRAND FONTS
 %-------------------------------------------------------------------------------
 
-% Set Benton Sans as main font (IU's primary typeface)
-% Using system font names (fonts must be installed via fc-cache)
-\setsansfont{BentonSans}[
-    UprightFont = BentonSans-Book,
-    BoldFont = BentonSans-Bold,
-    ItalicFont = BentonSans-BookItalic,
-    BoldItalicFont = BentonSans-BoldItalic
-]
+% Prefer the font files distributed with the theme. If the bundle is not
+% present (for example, in a system-wide installation), fall back to fonts
+% registered with Fontconfig.
+\newif\ifIU@bundledfonts
+\IU@bundledfontstrue
+\IfFileExists{\IU@fontdir BentonSans-Book.otf}{}{\IU@bundledfontsfalse}
+\IfFileExists{\IU@fontdir GeorgiaPro-CondRegular.ttf}{}{\IU@bundledfontsfalse}
+\IfFileExists{\IU@fontdir AzeretMono-Regular.ttf}{}{\IU@bundledfontsfalse}
 
-% Set Georgia Pro as serif font (IU's secondary typeface)
-\setmainfont{Georgia Pro Cond}
+\ifIU@bundledfonts
+    % Benton Sans: IU's primary typeface.
+    \setsansfont{BentonSans}[
+        Path = \IU@fontdir,
+        Extension = .otf,
+        UprightFont = *-Book,
+        BoldFont = *-Bold,
+        ItalicFont = *-BookItalic,
+        BoldItalicFont = *-BoldItalic
+    ]
 
-% Set Azeret Mono as monospace font (IU's tertiary typeface)
-\setmonofont{Azeret Mono}
+    % Georgia Pro Condensed: IU's secondary typeface.
+    \setmainfont{GeorgiaPro-Cond}[
+        Path = \IU@fontdir,
+        Extension = .ttf,
+        UprightFont = *Regular,
+        BoldFont = *Bold,
+        ItalicFont = *Italic,
+        BoldItalicFont = *BoldItalic
+    ]
+
+    % Azeret Mono: IU's tertiary typeface.
+    \setmonofont{AzeretMono}[
+        Path = \IU@fontdir,
+        Extension = .ttf,
+        UprightFont = *-Regular,
+        BoldFont = *-Bold,
+        ItalicFont = *-Italic,
+        BoldItalicFont = *-BoldItalic
+    ]
+\else
+    \PackageWarning{beamerthemeIUmetropolis}{%
+        Bundled IU fonts were not found in \IU@fontdir; using system fonts}%
+
+    \setsansfont{BentonSans}[
+        UprightFont = BentonSans-Book,
+        BoldFont = BentonSans-Bold,
+        ItalicFont = BentonSans-BookItalic,
+        BoldItalicFont = BentonSans-BoldItalic
+    ]
+    \setmainfont{Georgia Pro Cond}
+    \setmonofont{Azeret Mono}
+\fi
 
 %-------------------------------------------------------------------------------
 % METROPOLIS OPTIONS
